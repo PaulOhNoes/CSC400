@@ -1,0 +1,15 @@
+{% extends "donos/base.html" %}
+{% block content %}
+    {% for drive in drives %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ drive.author }}</a>
+              <small class="text-muted">{{ drive.start_date|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ drive.title }}</a></h2>
+            <p class="article-content">{{ drive.content }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock %}
