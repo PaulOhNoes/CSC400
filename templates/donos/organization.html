@@ -1,5 +1,7 @@
 {% extends "donos/base.html" %}
 {% block content %}
-    <h1>organization page</h1>
+    <h2>{{ user.organization }}</h2>
+    <p>{{ user.organization.description}}</p>
+    <p>{{ user.organization.address }}, {{ user.organization.city }} {{ user.organization.state }}</p>
 {% endblock %}
 

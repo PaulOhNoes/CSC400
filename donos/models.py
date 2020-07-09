@@ -1,16 +1,17 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
 
 class Organization(models.Model):
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User,  on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
     # TODO file = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    verified = models.BooleanField()
+    verified = models.BooleanField(default=False)
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     #abbreviated state name
@@ -31,9 +32,12 @@ class Drive(models.Model):
     orgID = models.ForeignKey(Organization, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('drive-detail', kwargs={'pk': self.pk})
+
     # user.post_set will find all posts created by the user
 
 
