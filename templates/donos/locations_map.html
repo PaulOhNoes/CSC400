@@ -1,5 +1,25 @@
 {% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
     <h1>locations map</h1>
+     <a href="{% url 'locations-list' %}">List</a>
+    <div class="content-section">
+        <form method="POST">
+         {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Search Charities</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    <iframe
+      width="600"
+      height="450"
+      frameborder="0" style="border:0"
+      src={{ link }} allowfullscreen>
+    </iframe>
 {% endblock %}
 

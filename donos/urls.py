@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DriveListView, DriveDetailView, DriveCreateView
+from .views import DriveListView, DriveDetailView, DriveCreateView, DriveDeleteView, DriveUpdateView
 from . import views
 
 urlpatterns = [
@@ -8,6 +8,8 @@ urlpatterns = [
     path('about/', views.about, name='donos-about'),
     # path('drive/view/', views.view_drive, name='drive-view'),
     path('drive/<int:pk>/', DriveDetailView.as_view(), name='drive-detail'),
+    path('drive/<int:pk>/update/', DriveUpdateView.as_view(), name='drive-update'),
+    path('drive/<int:pk>/delete/', DriveDeleteView.as_view(), name='drive-delete'),
     # path('drive/create/', views.create_drive, name='drive-create'),
     path('drive/new/', DriveCreateView.as_view(), name='drive-create'),
     path('organization/new/', views.org_register, name='donos-new_organization'),

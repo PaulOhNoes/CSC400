@@ -8,11 +8,10 @@ from donos.models import Organization
 class UserRegisterForm(UserCreationForm):
     # TODO Boolean Org Field
     email = forms.EmailField()
-    org = forms.BooleanField()
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'org']
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 # TODO implement UserUpdateForm
