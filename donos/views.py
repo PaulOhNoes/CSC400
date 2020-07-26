@@ -6,7 +6,7 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Drive
-from users.forms import OrganizationForm
+from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import SearchForm
 import requests
 import os
@@ -56,8 +56,6 @@ class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         drive = self.get_object()
         if self.request.user == drive.author:
             return True
-
-
 
 
 class DriveDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -134,7 +132,21 @@ def locations_map(request):
 
 
 def organization(request):
-    return render(request, 'donos/organization.html')
+    if request.method == 'POST':
+        org_form = OrganizationUpdateForm(request.POST, request.FILES, instance=request.user.organization)
+
+        if org_form.is_valid():
+            org_form.save()
+
+            messages.success(request, f'Your organization has been updated!')
+            return redirect('donos-organization')
+    else:
+        org_form = OrganizationUpdateForm(instance=request.user.organization)
+
+    context = {
+        'org_form': org_form,
+    }
+    return render(request, 'donos/organization.html', context=context)
 
 
 @login_required
@@ -145,17 +157,22 @@ def create_announcement(request):
 @login_required()
 def org_register(request):
     if request.method == 'POST':
-        form = OrganizationForm(request.POST)
-        if form.is_valid:
-            # commit=False tells Django that "Don't send this to database yet.
-            # I have more things I want to do with it."
+        form = OrganizationForm(request.POST, request.FILES)
+        try:
+            if form.is_valid:
+                # commit=False tells Django that "Don't send this to database yet.
+                # I have more things I want to do with it."
 
-            org = form.save(commit=False)
-            org.user = request.user
-            form.save()
-            name = form.cleaned_data.get('name')
-            messages.success(request, f'{name} Created!')
-            return redirect('users-profile')
+                org = form.save(commit=False)
+                org.user = request.user
+                # form.save()
+                org.save()
+                name = form.cleaned_data.get('name')
+                messages.success(request, f'{name} Created!')
+                return redirect('users-profile')
+        except ValueError:
+            messages.error(request, 'Validation form must be a pdf.')
+            return redirect('donos-new_organization')
     else:
         form = OrganizationForm()
 
