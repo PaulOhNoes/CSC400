@@ -1,5 +1,6 @@
 {% extends "donos/base.html" %}
 {% block content %}
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'drive-create' %}">Create</a>
     {% for drive in drives %}
         <article class="media content-section">
           <div class="media-body">

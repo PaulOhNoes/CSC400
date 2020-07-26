@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -12,14 +13,8 @@ import os
 
 # Create your views here.
 
-
-# def home(request):
-#     context = {
-#         'drives': Drive.objects.all(),
-#         'title': 'Home',
-#     }
-#     return render(request, 'donos/home.html', context=context)
-
+# def org_check(user):
+#     return user.organization
 
 class DriveListView(ListView):
     model = Drive
@@ -43,10 +38,12 @@ class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         form.instance.orgID = self.request.user.organization
         return super().form_valid(form)
 
+    # checks if user is part of an organization and verified before creating a drive
     def test_func(self):
-        if self.request.user.organization:
-            return True
-        else:
+        try:
+            if self.request.user.organization and self.request.user.organization.verified is True:
+                return True
+        except ObjectDoesNotExist:
             return False
 
 
@@ -55,16 +52,12 @@ class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'donos/drive_form.html'
     fields = ['title', 'content', 'orgID', 'author']
 
-    # TODO auto-grab organization ID and author(user)
-    # def form_valid(self, form):
-    #   form.instance.author = self.request.user
-    #  return super().form_valid(form)
-
     def test_func(self):
         drive = self.get_object()
         if self.request.user == drive.author:
             return True
-        return False
+
+
 
 
 class DriveDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
