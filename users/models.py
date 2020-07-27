@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from donos.models import Drive
 from PIL import Image
 
 # Create your models here.
@@ -15,6 +16,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=2)
     # TODO min_length, max_length
     zipcode = models.CharField(max_length=5)
+    follows = models.ManyToManyField('donos.Drive', related_name='followed_by')
 
     def __str__(self):
         return f'{self.user.username} Profile'

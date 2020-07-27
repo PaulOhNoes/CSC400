@@ -5,6 +5,7 @@
         <div>
         <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>
         <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-state' user.username %}" >State</a>
+        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-follow' user.username %}" >Follow</a>
         </div>
     {% endif %}
     {% for drive in drives %}

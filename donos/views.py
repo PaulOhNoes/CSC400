@@ -5,8 +5,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from .models import Drive
-from donos.models import User
+from donos.models import User, UserDrives
 from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import SearchForm
 import requests
@@ -46,8 +47,34 @@ class StateDriveListView(ListView):
         return Drive.objects.filter(state=user.profile.state).order_by('-start_date')
 
 
+class FollowDriveListView(ListView):
+    model = Drive
+    template_name = 'donos/follow_drives.html'
+    context_object_name = 'drives'
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        # return UserDrives.objects.filter(userID=user).order_by('-join_date')
+        return user.profile.follows.all()
+
+
 class DriveDetailView(DetailView):
     model = Drive
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(DriveDetailView, self).get_context_data(**kwargs)
+        user = self.request.user
+        id = self.kwargs.get('pk')
+
+        if user.profile.follows.filter(id=id).first():
+            follows = True
+        else:
+            follows = False
+
+        context['follows'] = follows
+        return context
 
 
 class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -93,6 +120,23 @@ class DriveDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 def about(request):
     return render(request, 'donos/about.html')
+
+
+def follow(request, pk):
+    user = request.user
+    drive = Drive.objects.get(id=pk)
+    user.profile.follows.add(drive)
+    messages.success(request, 'You have followed this drive!')
+    return redirect('drive-detail', pk=pk)
+
+
+def unfollow(request, pk):
+    user = request.user
+    a = user.profile.follows.filter(id=pk).first()
+    # removes the relationship between the user.profile and drive
+    user.profile.follows.remove(a)
+    messages.success(request, 'You have unfollowed this drive!')
+    return redirect('drive-detail', pk=pk)
 
 
 def locations_list(request):

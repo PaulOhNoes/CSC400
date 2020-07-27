@@ -47,7 +47,7 @@ class Drive(models.Model):
     # user.post_set will find all posts created by the user
 
 
-class userDrives(models.Model):
+class UserDrives(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
     driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
     join_date = models.DateTimeField(default=timezone.now)
