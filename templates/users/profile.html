@@ -7,10 +7,12 @@
         <div class="media-body">
           <h2 class="account-heading">{{ user.username }}</h2>
           <p class="text-secondary">{{ user.email}}</p>
+            <p class="text-secondary">{{ user.profile.address}}, {{ user.profile.city }},
+                {{ user.profile.state }} {{ user.profile.zipcode }}</p>
         </div>
           {% if user.organization %}
             <div>
-              <a href="{% url 'donos-organization' %}">Organization</a>
+              <a href="{% url 'donos-organization-view' user.organization.id%}">Organization</a>
             </div>
           {% else %}
             <div>
@@ -19,17 +21,6 @@
           {% endif %}
 
       </div>
-        <!-- enctype is for saving images -->
-      <form method="POST" enctype="multipart/form-data">
-         {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Update Profile</legend>
-                {{ user_form|crispy }}
-                {{ profile_form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Update!</button>
-            </div>
-        </form>
+        <a href="{% url 'users-settings' %}">Settings</a>
     </div>
 {% endblock %}

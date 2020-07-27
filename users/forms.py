@@ -39,4 +39,4 @@ class OrganizationForm(forms.ModelForm):
 class OrganizationUpdateForm(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ['file']
+        fields = ['name', 'description', 'address', 'city', 'state', 'zipcode', 'file']

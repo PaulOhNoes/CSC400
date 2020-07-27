@@ -1,5 +1,5 @@
 from django import forms
-from .models import Notifications
+from .models import Notifications, Organization
 
 
 class SearchForm(forms.Form):
@@ -12,3 +12,4 @@ class NotificationForm(forms.ModelForm):
         model = Notifications
         fields = ['title', 'description']
         # exclude = ["user"]
+

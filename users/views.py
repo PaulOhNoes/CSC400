@@ -27,6 +27,16 @@ def register(request):
 
 @login_required
 def profile(request):
+    return render(request, 'users/profile.html')
+
+
+@login_required
+def announcements(request):
+    return render(request, 'users/announcements.html')
+
+
+@login_required
+def settings(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
@@ -45,14 +55,4 @@ def profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
     }
-    return render(request, 'users/profile.html', context)
-
-
-@login_required
-def announcements(requests):
-    return render(requests, 'users/announcements.html')
-
-
-@login_required
-def settings(requests):
-    return render(requests, 'users/settings.html')
+    return render(request, 'users/settings.html', context=context)

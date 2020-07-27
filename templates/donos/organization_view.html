@@ -1,0 +1,12 @@
+{% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h2>{{ org.name}}</h2>
+    <p>VERIFIED: {{ org.verified }}</p>
+    <p>{{ org.description}}</p>
+    <p>{{org.address }}, {{ org.city }} {{ org.state }}</p>
+
+    {% if org.id is user.organization.id %}
+        <a href="{% url 'donos-organization-settings' %}">Settings</a>
+    {% endif %}
+{% endblock %}

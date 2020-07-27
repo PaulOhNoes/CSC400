@@ -6,7 +6,7 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import Drive, Notifications
+from .models import Drive, Notifications, Organization
 from donos.models import User, UserDrives
 from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import SearchForm, NotificationForm
@@ -126,6 +126,7 @@ def about(request):
     return render(request, 'donos/about.html')
 
 
+@login_required()
 def follow(request, pk):
     user = request.user
     drive = Drive.objects.get(id=pk)
@@ -134,6 +135,7 @@ def follow(request, pk):
     return redirect('drive-detail', pk=pk)
 
 
+@login_required()
 def unfollow(request, pk):
     user = request.user
     a = user.profile.follows.filter(id=pk).first()
@@ -143,6 +145,7 @@ def unfollow(request, pk):
     return redirect('drive-detail', pk=pk)
 
 
+@login_required()
 def notification_post(request, pk):
     if request.method == 'POST':
         form = NotificationForm(request.POST)
@@ -158,7 +161,6 @@ def notification_post(request, pk):
 
     context = {'form': form}
     return render(request, 'donos/notification_post.html', context=context)
-
 
 
 def locations_list(request):
@@ -218,28 +220,11 @@ def locations_map(request):
     }
     return render(request, 'donos/locations_map.html', context=context)
 
-
-def organization(request):
-    if request.method == 'POST':
-        org_form = OrganizationUpdateForm(request.POST, request.FILES, instance=request.user.organization)
-
-        if org_form.is_valid():
-            org_form.save()
-
-            messages.success(request, f'Your organization has been updated!')
-            return redirect('donos-organization')
-    else:
-        org_form = OrganizationUpdateForm(instance=request.user.organization)
-
-    context = {
-        'org_form': org_form,
-    }
-    return render(request, 'donos/organization.html', context=context)
-
-
-@login_required
-def create_announcement(request):
-    return render(request, 'donos/create_announcement.html')
+# org profile page
+def organization_view(request, pk):
+    org = Organization.objects.get(id=pk)
+    context = {'org': org}
+    return render(request, 'donos/organization_view.html', context=context)
 
 
 @login_required()
@@ -269,3 +254,22 @@ def org_register(request):
         'title': 'register',
     }
     return render(request, 'donos/register_org.html', context=context)
+
+
+@login_required()
+def org_settings(request):
+    if request.method == 'POST':
+        form = OrganizationUpdateForm(request.POST, request.FILES, instance=request.user.organization)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, f'Your organization has been updated!')
+            return redirect('donos-organization')
+    else:
+        form = OrganizationUpdateForm(instance=request.user.organization)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'donos/organization_settings.html', context=context)
