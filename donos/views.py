@@ -6,10 +6,10 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import Drive
+from .models import Drive, Notifications
 from donos.models import User, UserDrives
 from users.forms import OrganizationForm, OrganizationUpdateForm
-from .forms import SearchForm
+from .forms import SearchForm, NotificationForm
 import requests
 import os
 
@@ -73,7 +73,11 @@ class DriveDetailView(DetailView):
         else:
             follows = False
 
+        drive = Drive.objects.get(id=id)
+        notifications = Notifications.objects.filter(drive=drive).order_by('-date_posted')
+
         context['follows'] = follows
+        context['notifications'] = notifications
         return context
 
 
@@ -137,6 +141,24 @@ def unfollow(request, pk):
     user.profile.follows.remove(a)
     messages.success(request, 'You have unfollowed this drive!')
     return redirect('drive-detail', pk=pk)
+
+
+def notification_post(request, pk):
+    if request.method == 'POST':
+        form = NotificationForm(request.POST)
+
+        if form.is_valid():
+            notif = form.save(commit=False)
+            notif.drive = Drive.objects.get(id=pk)
+            notif.save()
+            messages.success(request, f'Your notification has been sent!')
+            return redirect('drive-detail', pk=pk)
+    else:
+        form = NotificationForm(instance=request.user.organization)
+
+    context = {'form': form}
+    return render(request, 'donos/notification_post.html', context=context)
+
 
 
 def locations_list(request):

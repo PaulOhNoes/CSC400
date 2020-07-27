@@ -46,7 +46,7 @@ class Drive(models.Model):
 
     # user.post_set will find all posts created by the user
 
-
+# TODO NO LONGER NEEDED
 class UserDrives(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
     driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
@@ -70,6 +70,7 @@ class DonationItem(models.Model):
 
 
 class Notifications(models.Model):
-    driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=500)
+    date_posted = models.DateTimeField(default=timezone.now)
+    drive = models.ForeignKey(Drive, on_delete=models.CASCADE)

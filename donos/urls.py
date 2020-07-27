@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import DriveListView, DriveDetailView, DriveCreateView, DriveDeleteView, DriveUpdateView,\
-    CityDriveListView, StateDriveListView, FollowDriveListView
+    CityDriveListView, StateDriveListView, FollowDriveListView, notification_post
 from . import views
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path('drive/<int:pk>/delete/', DriveDeleteView.as_view(), name='drive-delete'),
     path('drive/<int:pk>/follow/', views.follow, name='drive-follow'),
     path('drive/<int:pk>/unfollow/', views.unfollow, name='drive-unfollow'),
+    path('drive/<int:pk>/notification_post/', views.notification_post, name='drive-notification-post'),
     path('drive/new/', DriveCreateView.as_view(), name='drive-create'),
     path('organization/new/', views.org_register, name='donos-new_organization'),
     path('organization/', views.organization, name='donos-organization'),
