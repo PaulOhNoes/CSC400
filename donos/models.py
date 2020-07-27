@@ -15,10 +15,9 @@ class Organization(models.Model):
     verified = models.BooleanField(default=False)
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    #abbreviated state name
+    # abbreviated state name
     state = models.CharField(max_length=2)
-    # TODO min_length, max_length
-    zipcode = models.IntegerField()
+    zipcode = models.CharField(max_length=5)
     file = models.FileField(default='verification_files/default.pdf', upload_to='verification_files',
                             validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
 
@@ -27,13 +26,17 @@ class Organization(models.Model):
 
 
 class Drive(models.Model):
-    # TODO orgID, end_date
     title = models.CharField(max_length=100)
     content = models.TextField(max_length=1000)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=timezone.now)
     orgID = models.ForeignKey(Organization, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    # abbreviated state name
+    state = models.CharField(max_length=2)
+    zipcode = models.CharField(max_length=5)
 
     def __str__(self):
         return self.title

@@ -1,11 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Drive
+from donos.models import User
 from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import SearchForm
 import requests
@@ -13,8 +14,6 @@ import os
 
 # Create your views here.
 
-# def org_check(user):
-#     return user.organization
 
 class DriveListView(ListView):
     model = Drive
@@ -22,6 +21,29 @@ class DriveListView(ListView):
     context_object_name = 'drives'
     # newest to oldest drives
     ordering = ['-start_date']
+    paginate_by = 5
+
+
+class CityDriveListView(ListView):
+    model = Drive
+    template_name = 'donos/city_drives.html'
+    context_object_name = 'drives'
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Drive.objects.filter(city=user.profile.city).filter(state=user.profile.state).order_by('-start_date')
+
+
+class StateDriveListView(ListView):
+    model = Drive
+    template_name = 'donos/state_drives.html'
+    context_object_name = 'drives'
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Drive.objects.filter(state=user.profile.state).order_by('-start_date')
 
 
 class DriveDetailView(DetailView):
@@ -30,7 +52,7 @@ class DriveDetailView(DetailView):
 
 class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Drive
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode']
 
     # setting the Drive author and org
     def form_valid(self, form):

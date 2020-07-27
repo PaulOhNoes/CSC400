@@ -9,6 +9,12 @@ class Profile(models.Model):
     # TODO binary org Column
     user = models.OneToOneField(User,  on_delete=models.CASCADE)
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    # abbreviated state name
+    state = models.CharField(max_length=2)
+    # TODO min_length, max_length
+    zipcode = models.CharField(max_length=5)
 
     def __str__(self):
         return f'{self.user.username} Profile'
