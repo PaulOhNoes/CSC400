@@ -55,8 +55,18 @@ class FollowDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        # return UserDrives.objects.filter(userID=user).order_by('-join_date')
         return user.profile.follows.all()
+
+
+class YoursDriveListView(ListView):
+    model = Drive
+    template_name = 'donos/yours_drives.html'
+    context_object_name = 'drives'
+    paginate_by = 5
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return user.organization.drive_set.all()
 
 
 class DriveDetailView(DetailView):
@@ -223,7 +233,9 @@ def locations_map(request):
 # org profile page
 def organization_view(request, pk):
     org = Organization.objects.get(id=pk)
-    context = {'org': org}
+    drives = org.drive_set.all()
+    context = {'org': org,
+               'drives': drives}
     return render(request, 'donos/organization_view.html', context=context)
 
 

@@ -7,6 +7,7 @@ urlpatterns = [
     path('drive/city/<str:username>/', CityDriveListView.as_view(), name='donos-home-city'),
     path('drive/state/<str:username>/', StateDriveListView.as_view(), name='donos-home-state'),
     path('drive/follow/<str:username>/', FollowDriveListView.as_view(), name='donos-home-follow'),
+    path('drive/yours/<str:username>/', YoursDriveListView.as_view(), name='donos-home-yours'),
     path('about/', views.about, name='donos-about'),
     path('drive/<int:pk>/', DriveDetailView.as_view(), name='drive-detail'),
     path('drive/<int:pk>/update/', DriveUpdateView.as_view(), name='drive-update'),
