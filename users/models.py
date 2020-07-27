@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from donos.models import Drive
 from PIL import Image
 
@@ -8,7 +10,7 @@ from PIL import Image
 
 class Profile(models.Model):
     # TODO binary org Column
-    user = models.OneToOneField(User,  on_delete=models.CASCADE)
+    user = models.OneToOneField(User,  on_delete=models.CASCADE, null=True)
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -31,3 +33,4 @@ class Profile(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+

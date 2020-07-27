@@ -6,7 +6,6 @@ from donos.models import Organization
 
 
 class UserRegisterForm(UserCreationForm):
-    # TODO Boolean Org Field
     email = forms.EmailField()
 
     class Meta:
@@ -27,6 +26,7 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image', 'address', 'city', 'state', 'zipcode']
+        # exclude = ('user',)
 
 
 class OrganizationForm(forms.ModelForm):

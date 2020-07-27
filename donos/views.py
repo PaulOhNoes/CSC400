@@ -230,6 +230,7 @@ def locations_map(request):
     }
     return render(request, 'donos/locations_map.html', context=context)
 
+0
 # org profile page
 def organization_view(request, pk):
     org = Organization.objects.get(id=pk)

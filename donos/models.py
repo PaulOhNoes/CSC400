@@ -8,7 +8,7 @@ from django.urls import reverse
 
 
 class Organization(models.Model):
-    user = models.OneToOneField(User,  on_delete=models.CASCADE)
+    user = models.OneToOneField(User,  on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
     # TODO file = models.ImageField(default='default.jpg', upload_to='profile_pics')

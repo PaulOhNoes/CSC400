@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OrganizationForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 # Create your views here.
 
@@ -12,8 +13,11 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
             messages.success(request, f'Account created for {username}!')
-            return redirect('login')
+            user = authenticate(username=username,password=password)
+            login(request, user)
+            return redirect('register2')
     else:
         form = UserRegisterForm()
 
@@ -21,8 +25,25 @@ def register(request):
         'form': form,
         'title': 'register',
     }
-
     return render(request, 'users/register.html', context=context)
+
+
+@login_required
+def register2(request):
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Account Finished!')
+            return redirect('users-profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'form': form,
+        'title': 'register',
+    }
+    return render(request, 'users/register2.html', context=context)
 
 
 @login_required
