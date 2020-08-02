@@ -26,14 +26,6 @@ class DriveForm(forms.ModelForm):
         fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode', 'categories']
 
 
-class Donation1Form(forms.ModelForm):
-    category = forms.ModelChoiceField(queryset=Category.objects, required=True)
-
-    class Meta:
-        model = DonationItem
-        fields = ['name', 'quantity', 'category']
-
-
 class DonationForm(forms.ModelForm):
     category = forms.ModelChoiceField(queryset=Category.objects.none(),widget=forms.Select(), required=True)
 

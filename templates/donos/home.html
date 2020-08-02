@@ -20,7 +20,7 @@
             </div>
             <h2><a class="article-title" href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h2>
             <p> {% for category in drive.category.all %}
-                {{ category }} //
+                <span class="badge badge-primary">{{ category.name }}</span>
             {% endfor %}
             </p>
             <p class="article-content">{{ drive.content }}</p>

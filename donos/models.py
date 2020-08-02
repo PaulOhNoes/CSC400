@@ -38,6 +38,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
 
 class Drive(models.Model):
     title = models.CharField(max_length=100)
@@ -58,8 +62,6 @@ class Drive(models.Model):
 
     def get_absolute_url(self):
         return reverse('drive-detail', kwargs={'pk': self.pk})
-
-    # user.post_set will find all posts created by the user
 
 
 # TODO NO LONGER NEEDED
@@ -91,3 +93,7 @@ class Notifications(models.Model):
     description = models.TextField(max_length=500)
     date_posted = models.DateTimeField(default=timezone.now)
     drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Notifications"
+        verbose_name_plural = "Notifications"
