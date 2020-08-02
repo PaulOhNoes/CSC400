@@ -19,6 +19,10 @@
               <small class="text-muted">{{ drive.start_date|date:"F d, Y" }}</small>
             </div>
             <h2><a class="article-title" href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h2>
+            <p> {% for category in drive.category.all %}
+                {{ category }} //
+            {% endfor %}
+            </p>
             <p class="article-content">{{ drive.content }}</p>
           </div>
         </article>

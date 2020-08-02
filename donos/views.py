@@ -6,10 +6,11 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from .models import Drive, Notifications, Organization
+from django.forms import formset_factory, modelformset_factory, inlineformset_factory
+from .models import Drive, Notifications, Organization, Donation
 from donos.models import User, UserDrives
 from users.forms import OrganizationForm, OrganizationUpdateForm
-from .forms import SearchForm, NotificationForm
+from .forms import *
 import requests
 import os
 
@@ -55,7 +56,7 @@ class FollowDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return user.profile.follows.all()
+        return user.profile.follows.all().order_by('-start_date')
 
 
 class YoursDriveListView(ListView):
@@ -66,7 +67,7 @@ class YoursDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return user.organization.drive_set.all()
+        return user.organization.drive_set.all().order_by('-start_date')
 
 
 class DriveDetailView(DetailView):
@@ -85,20 +86,27 @@ class DriveDetailView(DetailView):
 
         drive = Drive.objects.get(id=id)
         notifications = Notifications.objects.filter(drive=drive).order_by('-date_posted')
+        total_dono = drive.donation_set.filter(approved=True).count()
 
         context['follows'] = follows
         context['notifications'] = notifications
+        context['total_dono'] = total_dono
         return context
 
 
 class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Drive
-    fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode']
+    # fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode']
+    form_class = DriveForm
 
     # setting the Drive author and org
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.orgID = self.request.user.organization
+        obj = form.save(commit=True)
+        for category in form.cleaned_data['categories']:
+            obj.category.add(category)
+        obj.save()
         return super().form_valid(form)
 
     # checks if user is part of an organization and verified before creating a drive
@@ -113,7 +121,7 @@ class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Drive
     template_name = 'donos/drive_form.html'
-    fields = ['title', 'content', 'orgID', 'author']
+    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode']
 
     def test_func(self):
         drive = self.get_object()
@@ -153,6 +161,62 @@ def unfollow(request, pk):
     user.profile.follows.remove(a)
     messages.success(request, 'You have unfollowed this drive!')
     return redirect('drive-detail', pk=pk)
+
+
+@login_required()
+def donate(request, pk, fnum):
+    formset_base = formset_factory(DonationForm, extra=fnum)
+    # WITHOUT form_kwargs CUSTOM PARAMETERS IN FORMS WOULD NOT WORK
+    formset = formset_base(form_kwargs={'id': pk})
+    helper = DonationFormSetHelper()
+    if 'submit' in request.POST:
+        formset = formset_base(request.POST, form_kwargs={'id': pk})
+        if formset.is_valid():
+            d = Donation.objects.create(drive=Drive.objects.get(id=pk), user=request.user, approved=False)
+            d.save()
+            d.refresh_from_db()
+            for form in formset:
+                obj = form.save(commit=False)
+                obj.donation = d
+                obj.save()
+            return redirect('drive-detail', pk)
+        else:
+            messages.error(request, "Not valid!")
+    elif 'form_add' in request.POST:
+        fnum = fnum + 1
+        return redirect('drive-donate', pk, fnum)
+    elif 'form_remove' in request.POST:
+        fnum = fnum - 1
+        return redirect('drive-donate', pk, fnum)
+
+    return render(request, 'donos/donate.html', {'formset': formset, 'helper': helper})
+
+
+@login_required()
+def donations(request, pk):
+    donations = Drive.objects.get(pk=pk).donation_set.all().order_by('-date')
+    context = {'donations': donations}
+    return render(request, 'donos/donations.html', context=context)
+
+
+@login_required()
+def donation_edit(request, pk, dnum):
+    # We use inlineformset_factory to retrieve instance data
+    edit_form = inlineformset_factory(Donation, DonationItem, fields=('name', 'quantity', 'category'), extra=0)
+    d = Donation.objects.get(pk=dnum)
+    formset = edit_form(instance=d)
+    if request.method == 'POST':
+        formset = edit_form(request.POST, instance=d,)
+
+        if formset.is_valid():
+            formset.save()
+
+            messages.success(request, f'Your donation has been updated!')
+            d.approved = True
+            d.save()
+            return redirect('drive-detail', pk)
+    return render(request, 'donos/donation_edit.html', {'formset': formset})
+
 
 
 @login_required()
@@ -230,7 +294,7 @@ def locations_map(request):
     }
     return render(request, 'donos/locations_map.html', context=context)
 
-0
+
 # org profile page
 def organization_view(request, pk):
     org = Organization.objects.get(id=pk)

@@ -1,0 +1,11 @@
+{% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <form method="POST">
+         {% csrf_token %}
+        {{formset.as_p}}
+        <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Approve!</button>
+            </div>
+        </form>
+{% endblock %}

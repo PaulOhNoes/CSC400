@@ -25,6 +25,20 @@ class Organization(models.Model):
         return self.name
 
 
+class Category(models.Model):
+    category = (
+        ('food', 'Food'),
+        ('clothes', 'Clothes'),
+        ('toiletries', 'Toiletries'),
+        ('toys', 'Toys'),
+        ('money', 'Money')
+    )
+    name = models.CharField(max_length=50, choices=category, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Drive(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField(max_length=1000)
@@ -37,6 +51,7 @@ class Drive(models.Model):
     # abbreviated state name
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
+    category = models.ManyToManyField(Category)
 
     def __str__(self):
         return self.title
@@ -46,6 +61,7 @@ class Drive(models.Model):
 
     # user.post_set will find all posts created by the user
 
+
 # TODO NO LONGER NEEDED
 class UserDrives(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -54,18 +70,19 @@ class UserDrives(models.Model):
 
 
 class Donation(models.Model):
-    driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    approved = models.BooleanField()
+    drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    approved = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
     # TODO verification code
     # UUID is randomly generated code
-    code = models.UUIDField()
+    # code = models.UUIDField()
 
 
 class DonationItem(models.Model):
-    donationID = models.ForeignKey(Donation, on_delete=models.CASCADE)
+    donation = models.ForeignKey(Donation, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
 

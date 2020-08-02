@@ -1,0 +1,14 @@
+{% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1>Donations</h1>
+    {% for donation in donations %}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2><a class="article-title" href="{% url 'drive-donation-edit' donation.drive.id donation.id %}">{{ donation.date|date:"Y-m-d" }}:{{ donation.id }}</a></h2>
+            <p class="article-content">Approved: {{ donation.approved }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock %}
+
