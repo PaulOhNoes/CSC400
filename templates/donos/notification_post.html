@@ -6,11 +6,10 @@
          {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Send A Notification</legend>
-                {% crispy formset %}
+                {{ form|crispy }}
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Send!</button>
             </div>
         </form>
 {% endblock %}
-

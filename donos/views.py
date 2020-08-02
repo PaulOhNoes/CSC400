@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -195,6 +195,11 @@ def donate(request, pk, fnum):
 @login_required()
 def donations(request, pk):
     donations = Drive.objects.get(pk=pk).donation_set.all().order_by('-date')
+    author = Drive.objects.get(pk=pk).author
+
+    if request.user != author:
+        raise PermissionDenied()
+
     context = {'donations': donations}
     return render(request, 'donos/donations.html', context=context)
 
@@ -205,6 +210,10 @@ def donation_edit(request, pk, dnum):
     edit_form = inlineformset_factory(Donation, DonationItem, fields=('name', 'quantity', 'category'), extra=0)
     d = Donation.objects.get(pk=dnum)
     formset = edit_form(instance=d)
+
+    if request.user != d.drive.author:
+        raise PermissionDenied()
+
     if request.method == 'POST':
         formset = edit_form(request.POST, instance=d,)
 
@@ -221,12 +230,17 @@ def donation_edit(request, pk, dnum):
 
 @login_required()
 def notification_post(request, pk):
+    drive = Drive.objects.get(id=pk)
+
+    if request.user != drive.author:
+        raise PermissionDenied()
+
     if request.method == 'POST':
         form = NotificationForm(request.POST)
 
         if form.is_valid():
             notif = form.save(commit=False)
-            notif.drive = Drive.objects.get(id=pk)
+            notif.drive = drive
             notif.save()
             messages.success(request, f'Your notification has been sent!')
             return redirect('drive-detail', pk=pk)
