@@ -1,0 +1,5 @@
+django~=3.0.8
+pillow~=7.2.0
+django-crispy-forms
+requests~=2.24.0
+pprintpp

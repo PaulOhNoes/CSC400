@@ -1,0 +1,16 @@
+{% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h2>{{ user.organization }} Settings Page</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Update Organization</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update!</button>
+            </div>
+        </form>
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends "donos/base.html" %}
 {% block content %}
+    <h1>Drives I Own</h1>
     {# display city and state filter buttons if user is logged in#}
     {% if user.is_authenticated %}
         <div>
@@ -19,11 +20,11 @@
               <small class="text-muted">{{ drive.start_date|date:"F d, Y" }}</small>
             </div>
             <h2><a class="article-title" href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h2>
+            <p class="article-content">{{ drive.content }}</p>
             <p> {% for category in drive.category.all %}
-                <span class="badge badge-primary">{{ category.name }}</span>
+                {{ category }} //
             {% endfor %}
             </p>
-            <p class="article-content">{{ drive.content }}</p>
           </div>
         </article>
     {% endfor %}

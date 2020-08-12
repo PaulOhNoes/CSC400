@@ -7,8 +7,20 @@
         <div class="media-body">
           <h2 class="account-heading">{{ user.username }}</h2>
           <p class="text-secondary">{{ user.email}}</p>
+            <p class="text-secondary">{{ user.profile.address}}, {{ user.profile.city }},
+                {{ user.profile.state }} {{ user.profile.zipcode }}</p>
         </div>
+          {% if user.organization %}
+            <div>
+              <a href="{% url 'donos-organization-view' user.organization.id%}">Organization</a>
+            </div>
+          {% else %}
+            <div>
+              <a href="{% url 'donos-new_organization' %}">Organization</a>
+            </div>
+          {% endif %}
+
       </div>
-      <!-- FORM HERE -->
+        <a href="{% url 'users-settings' %}">Settings</a>
     </div>
 {% endblock %}

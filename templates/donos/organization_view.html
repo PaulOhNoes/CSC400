@@ -1,28 +1,25 @@
 {% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-    {# display city and state filter buttons if user is logged in#}
-    {% if user.is_authenticated %}
-        <div>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-state' user.username %}" >State</a>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-follow' user.username %}" >Follow</a>
-        {% if user.organization %}
-            <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-yours' user.username %}" >Yours</a>
-        {% endif %}
-        </div>
+    <h2>{{ org.name}}</h2>
+    <p>VERIFIED: {{ org.verified }}</p>
+    <p>{{ org.description}}</p>
+    <p>{{org.address }}, {{ org.city }} {{ org.state }}</p>
+
+    {% if org.id is user.organization.id %}
+        <a href="{% url 'donos-organization-settings' %}">Settings</a>
     {% endif %}
+
+    <h2>My Drives</h2>
+
     {% for drive in drives %}
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ drive.author }}</a> // <a class="mr-2" href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a>
+              <a class="mr-2" href="#">{{ drive.author }}</a> // <a class="mr-2" href="#">{{ drive.orgID }}</a>
               <small class="text-muted">{{ drive.start_date|date:"F d, Y" }}</small>
             </div>
             <h2><a class="article-title" href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h2>
-            <p> {% for category in drive.category.all %}
-                <span class="badge badge-primary">{{ category.name }}</span>
-            {% endfor %}
-            </p>
             <p class="article-content">{{ drive.content }}</p>
           </div>
         </article>
