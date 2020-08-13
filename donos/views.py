@@ -219,13 +219,25 @@ def donate(request, pk, fnum):
 @login_required()
 def donations(request, pk):
     page = request.GET.get('page')
-    donations = Paginator(Drive.objects.get(pk=pk).donation_set.all().order_by('-date'), 10)
+
+    query = Drive.objects.get(pk=pk).donation_set.all()
+    donations = Paginator(query.order_by('-date'), 10)
     author = Drive.objects.get(pk=pk).author
 
     if request.user != author:
         raise PermissionDenied()
 
-    context = {'donations': donations.get_page(page)}
+    if request.method == 'POST':
+        form = DonationSearchForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['search']
+            return redirect('drive-donation-edit', pk, data)
+
+    else:
+        form = DonationSearchForm()
+
+    context = {'donations': donations.get_page(page),
+               'form': form, }
     return render(request, 'donos/donations.html', context=context)
 
 
@@ -245,7 +257,8 @@ def donation_edit(request, pk, dnum):
     d = Donation.objects.get(pk=dnum)
     formset = edit_form(instance=d)
 
-    if request.user != d.drive.author:
+    # user must be the owner and using the respective drive
+    if request.user != d.drive.author or pk != d.drive.id:
         raise PermissionDenied()
 
     if request.method == 'POST':
@@ -316,6 +329,8 @@ def locations_list(request):
                                      'formatted_address': data['results'][x]['formatted_address'],
                                      'business_status': data['results'][x]['business_status'],
                                      'user_ratings_total': data['results'][x]['user_ratings_total'], })
+
+                # Not all results have opening hours
                 try:
                     list_results[x]['open'] = data['results'][x]['opening_hours']['open_now']
                 except:

@@ -11,6 +11,10 @@ class SearchForm(forms.Form):
                              widget=forms.TextInput(attrs={'placeholder': 'Input City/Zip Code'}))
 
 
+class DonationSearchForm(forms.Form):
+    search = forms.IntegerField(label='search', widget=forms.TextInput(attrs={'placeholder': 'Input Donation ID'}))
+
+
 class NotificationForm(forms.ModelForm):
     class Meta:
         model = Notifications
@@ -20,7 +24,8 @@ class NotificationForm(forms.ModelForm):
 
 class DriveForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(queryset=Category.objects, widget=forms.CheckboxSelectMultiple(),
-                                            required=True)
+                                                required=True)
+
     class Meta:
         model = Drive
         fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city',
