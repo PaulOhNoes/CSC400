@@ -33,3 +33,7 @@ urlpatterns = [
 # only for debugging/testing
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# for custom error pages
+handler404 = 'donos.views.error_404'
+handler403 = 'donos.views.error_403'

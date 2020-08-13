@@ -18,6 +18,16 @@ import os
 # Create your views here.
 
 
+def error_404(request, exception):
+    data = {}
+    return render(request, 'donos/404.html', data)
+
+
+def error_403(request, exception):
+    data = {}
+    return render(request, 'donos/403.html', data)
+
+
 class DriveListView(ListView):
     model = Drive
     template_name = 'donos/home.html'
@@ -215,9 +225,7 @@ def donations(request, pk):
 
 @login_required()
 def donation_view(request, pk, dnum):
-    # We use inlineformset_factory to retrieve instance data
-    donation = Donation.objects.get(pk=dnum).donationitem_set.all()
-
+    donation = Donation.objects.get(pk=dnum)
     context = {
         'donation': donation,
     }
