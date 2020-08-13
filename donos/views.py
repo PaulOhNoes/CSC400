@@ -76,13 +76,14 @@ class DriveDetailView(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DriveDetailView, self).get_context_data(**kwargs)
+        follows = False
         user = self.request.user
         id = self.kwargs.get('pk')
 
-        if user.profile.follows.filter(id=id).first():
-            follows = True
-        else:
-            follows = False
+        # Checks if the user follows the drive
+        if self.request.user.is_authenticated:
+            if user.profile.follows.filter(id=id).first():
+                follows = True
 
         drive = Drive.objects.get(id=id)
         notifications = Notifications.objects.filter(drive=drive).order_by('-date_posted')
@@ -205,6 +206,17 @@ def donations(request, pk):
 
 
 @login_required()
+def donation_view(request, pk, dnum):
+    # We use inlineformset_factory to retrieve instance data
+    donation = Donation.objects.get(pk=dnum).donationitem_set.all()
+
+    context = {
+        'donation': donation,
+    }
+    return render(request, 'donos/donation_view.html', context)
+
+
+@login_required()
 def donation_edit(request, pk, dnum):
     # We use inlineformset_factory to retrieve instance data
     edit_form = inlineformset_factory(Donation, DonationItem, fields=('name', 'quantity', 'category'), extra=0)
@@ -245,10 +257,16 @@ def notification_post(request, pk):
             messages.success(request, f'Your notification has been sent!')
             return redirect('drive-detail', pk=pk)
     else:
-        form = NotificationForm(instance=request.user.organization)
+        form = NotificationForm()
 
     context = {'form': form}
     return render(request, 'donos/notification_post.html', context=context)
+
+
+def notification_view(request, pk, id):
+    data = Drive.objects.get(id=pk).notifications_set.get(pk=id)
+    context = {'notification': data}
+    return render(request, 'donos/notification_view.html', context=context)
 
 
 def locations_list(request):

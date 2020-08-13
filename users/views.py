@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from donos.models import Notifications, Donation
+from itertools import chain
 
 # Create your views here.
 
@@ -52,8 +54,34 @@ def profile(request):
 
 
 @login_required
-def announcements(request):
-    return render(request, 'users/announcements.html')
+def announcements_drives(request):
+    user = request.user
+    drives = user.profile.follows.all()
+
+    # create an empty queryset
+    q = Notifications.objects.none()
+
+    # union multiple queries together
+    for drive in drives:
+        q = q.union(drive.notifications_set.all())
+
+    context = {
+        'data': q.order_by('-date_posted'),
+    }
+    return render(request, 'users/announcements_drives.html', context=context)
+
+
+@login_required
+def announcements_donations(request):
+    user = request.user
+    drives = user.profile.follows.all()
+
+    data = user.donation_set.all().order_by('-date')
+
+    context = {
+        'data': data,
+    }
+    return render(request, 'users/announcements_donations.html', context=context)
 
 
 @login_required

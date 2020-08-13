@@ -1,0 +1,14 @@
+{% extends "donos/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1><a href="{% url 'drive-detail' notification.drive.id%}"> {{ notification.drive.title }}</a></h1>
+    <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ notification.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2>{{ notification.title }}</h2>
+            <p class="article-content">{{ notification.description }}</p>
+          </div>
+        </article>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "donos/base.html" %}
+{% block content %}
+    <h1>Notifications</h1>
+    <a href="{% url 'users-announcements-donations' %}">My Donations</a>
+    {% for notification in data %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ notification.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'drive-notification-view' notification.drive.id notification.id %}">{{ notification.title }}</a></h2>
+            <p class="article-content">{{ notification.description }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock %}
+
