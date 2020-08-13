@@ -5,6 +5,7 @@
     <p>VERIFIED: {{ org.verified }}</p>
     <p>{{ org.description}}</p>
     <p>{{org.address }}, {{ org.city }} {{ org.state }}</p>
+    <p>{{ org.email }}</p>
 
     {% if org.id is user.organization.id %}
         <a href="{% url 'donos-organization-settings' %}">Settings</a>

@@ -18,6 +18,7 @@ class Organization(models.Model):
     # abbreviated state name
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
+    email = models.EmailField()
     file = models.FileField(default='verification_files/default.pdf', upload_to='verification_files',
                             validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
 

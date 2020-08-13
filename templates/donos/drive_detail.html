@@ -4,7 +4,7 @@
     <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ drive.author }}</a>   // <a class="mr-2" href="#">{{ drive.orgID }}</a>
+              <a class="mr-2" href="#">{{ drive.author }}</a>   // <a class="mr-2" href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a>
               <small class="text-muted">{{ drive.start_date|date:"F d, Y" }} - {{ drive.start_date|date:"F d, Y" }}</small>
                 {% if object.author == user %}
                     <div>
@@ -25,6 +25,9 @@
             </p>
             <p class="article-content">{{ drive.content }}</p>
 
+              <div>
+                Org Email: {{ drive.orgID.email }}
+              </div>
               <div>
                 Drop Off Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}
               </div>
@@ -60,7 +63,7 @@
         <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>
         <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_page }}">Last</a>
     {% endif %}
-    
+
     {% for notification in notifications %}
         <article class="media content-section">
           <div class="media-body">

@@ -32,11 +32,11 @@ class ProfileUpdateForm(forms.ModelForm):
 class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ['name', 'description', 'address', 'city', 'state', 'zipcode', 'file']
+        fields = ['name', 'description', 'address', 'city', 'state', 'zipcode', 'file', 'email']
         exclude = ["user"]
 
 
 class OrganizationUpdateForm(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ['name', 'description', 'address', 'city', 'state', 'zipcode', 'file']
+        fields = ['name', 'description', 'address', 'city', 'state', 'zipcode', 'file', 'email']
