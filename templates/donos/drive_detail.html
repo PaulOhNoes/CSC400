@@ -1,11 +1,17 @@
 {% extends "donos/base.html" %}
 {% block content %}
     <h1>{{ drive.title }}</h1>
+
+    <!-- Drive container -->
     <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2" href="#">{{ drive.author }}</a>   // <a class="mr-2" href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a>
-              <small class="text-muted">{{ drive.start_date|date:"F d, Y" }} - {{ drive.start_date|date:"F d, Y" }}</small>
+                {% if drive.is_expired %}
+                    <small class="text-muted"> EXPIRED on {{ drive.end_date|date:"F d, Y" }}</small>
+                {% else %}
+                    <small class="text-muted">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>
+                {% endif %}
                 {% if object.author == user %}
                     <div>
                         <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'drive-update' object.id %}">Update</a>
@@ -16,24 +22,37 @@
                 {% endif %}
             </div>
             <h2><a class="article-title" href="#">{{ drive.title }}</a></h2>
+
+            <!-- Progress Bar -->
+            <div class="progress">
+                {% if drive.progress < 15 %}
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 15%"
+                   aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">Donate!</div>
+                {% else %}
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ drive.progress }}%"
+                   aria-valuenow="{{ drive.progress }}" aria-valuemin="0" aria-valuemax="100">{{ drive.progress }}%</div>
+                {% endif %}
+            </div>
+
+            <!-- Categories-->
             <p>
                 {% for category in object.category.all %}
                     <span class="badge badge-primary">{{ category.name }}</span>
                 {% endfor %}
-
-
             </p>
             <p class="article-content">{{ drive.content }}</p>
 
               <div>
-                Org Email: {{ drive.orgID.email }}
+                  Org Email: {{ drive.orgID.email }}
               </div>
               <div>
-                Drop Off Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}
+                  Drop Off Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}
               </div>
               <div>
-                    Total Donations: {{ total_dono }}
+                  Total Donations: {{ total_dono }}
               </div>
+
+            <!-- Drive user buttons -->
             {% if user.is_authenticated %}
                 <div>
                     {% if follows %}
@@ -41,11 +60,15 @@
                     {% else %}
                         <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'drive-follow' object.id %}">Follow</a>
                     {% endif %}
-                    <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'drive-donate' pk=object.id fnum=1 %}">Donate</a>
+                    {% if not drive.is_expired%}
+                        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'drive-donate' pk=object.id fnum=1 %}">Donate</a>
+                    {% endif %}
                 </div>
             {% endif %}
           </div>
         </article>
+
+    <!-- Pagination buttons -->
     {% if notifications.has_previous %}
         <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
         <a class='btn btn-outline-info mb-4'href="?page={{ notifications.previous_page_number }}">Previous</a>
@@ -61,9 +84,10 @@
 
     {% if notifications.has_next %}
         <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>
-        <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_page }}">Last</a>
+        <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_pages }}">Last</a>
     {% endif %}
 
+    <!-- Notifications container-->
     {% for notification in notifications %}
         <article class="media content-section">
           <div class="media-body">

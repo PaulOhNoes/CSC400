@@ -29,7 +29,7 @@
 
     {% if data.has_next %}
         <a class='btn btn-outline-info mb-4'href="?page={{ data.next_page_number }}">Next</a>
-        <a class='btn btn-outline-info mb-4'href="?page={{ data.paginator.num_page }}">Last</a>
+        <a class='btn btn-outline-info mb-4'href="?page={{ data.paginator.num_pages }}">Last</a>
     {% endif %}
 {% endblock %}
 

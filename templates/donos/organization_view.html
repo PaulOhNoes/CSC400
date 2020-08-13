@@ -4,7 +4,7 @@
     <h2>{{ org.name}}</h2>
     <p>VERIFIED: {{ org.verified }}</p>
     <p>{{ org.description}}</p>
-    <p>{{org.address }}, {{ org.city }} {{ org.state }}</p>
+    <p>{{ org.address }}, {{ org.city }} {{ org.state }}</p>
     <p>{{ org.email }}</p>
 
     {% if org.id is user.organization.id %}
@@ -41,7 +41,7 @@
 
     {% if drives.has_next %}
         <a class='btn btn-outline-info mb-4'href="?page={{ drives.next_page_number }}">Next</a>
-        <a class='btn btn-outline-info mb-4'href="?page={{ drives.paginator.num_page }}">Last</a>
+        <a class='btn btn-outline-info mb-4'href="?page={{ drives.paginator.num_pages }}">Last</a>
     {% endif %}
 
 {% endblock %}

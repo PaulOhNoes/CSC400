@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from PIL import Image
 
@@ -69,6 +69,7 @@ class Drive(models.Model):
     content = models.TextField(max_length=1000)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=timezone.now)
+    # active = models.BooleanField(default=True)
     orgID = models.ForeignKey(Organization, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=50)
@@ -77,6 +78,9 @@ class Drive(models.Model):
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
     banner = models.ImageField(default='banner_pics/default.jpg', upload_to='banner_pics')
+    progress = models.IntegerField(default=1,
+                                   validators=[MaxValueValidator(100, 'Integer value must be between 1 and 100'),
+                                               MinValueValidator(1, 'Integer value must be between 1 and 100')])
     category = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -95,6 +99,14 @@ class Drive(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.banner.path)
+
+    # Check to see if the drive is expired
+    @property
+    def is_expired(self):
+        if timezone.now() > self.end_date:
+            return True
+        else:
+            return False
 
 
 # TODO NO LONGER NEEDED

@@ -32,9 +32,10 @@ class DriveListView(ListView):
     model = Drive
     template_name = 'donos/home.html'
     context_object_name = 'drives'
-    # newest to oldest drives
-    ordering = ['-start_date']
     paginate_by = 5
+
+    def get_queryset(self):
+        return Drive.objects.filter(end_date__gt=timezone.now()).order_by('-start_date')
 
 
 class CityDriveListView(ListView):
@@ -45,7 +46,10 @@ class CityDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Drive.objects.filter(city=user.profile.city).filter(state=user.profile.state).order_by('-start_date')
+        return Drive.objects.filter(end_date__gt=timezone.now())\
+            .filter(city=user.profile.city)\
+            .filter(state=user.profile.state)\
+            .order_by('-start_date')
 
 
 class StateDriveListView(ListView):
@@ -56,7 +60,9 @@ class StateDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Drive.objects.filter(state=user.profile.state).order_by('-start_date')
+        return Drive.objects.filter(end_date__gt=timezone.now())\
+            .filter(state=user.profile.state)\
+            .order_by('-start_date')
 
 
 class FollowDriveListView(ListView):
@@ -139,7 +145,7 @@ class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Drive
     template_name = 'donos/drive_form.html'
-    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode']
+    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode', 'progress']
 
     def test_func(self):
         drive = self.get_object()

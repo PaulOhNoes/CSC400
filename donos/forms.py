@@ -23,7 +23,8 @@ class DriveForm(forms.ModelForm):
                                             required=True)
     class Meta:
         model = Drive
-        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode', 'categories', 'banner']
+        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city',
+                  'state', 'zipcode', 'categories', 'banner']
 
 
 class DonationForm(forms.ModelForm):
