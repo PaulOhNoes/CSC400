@@ -42,28 +42,6 @@ class DonationForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
 
-        # self.helper.layout = Layout(
-        #         Div(
-        #                 'name',
-        #                 css_class='form-group',
-        #         ),
-        #         Div(
-        #             Div(
-        #                 'quantity',
-        #                 css_class='form-group col-md-6',
-        #             ),
-        #             Div(
-        #                 'quantity',
-        #                 css_class='form-group col-md-6',
-        #             ),
-        #             css_class='form-row',
-        #         )
-        # )
-
-
-# DonationFormSet = formset_factory(DonationForm, extra=2)
-
-
 class DonationFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

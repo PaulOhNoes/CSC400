@@ -5,10 +5,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
-from .models import Drive, Notifications, Organization, Donation
-from donos.models import User, UserDrives
+from .models import *
+from donos.models import *
 from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import *
 import requests
@@ -76,6 +77,9 @@ class DriveDetailView(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DriveDetailView, self).get_context_data(**kwargs)
+
+        page = self.request.GET.get('page')
+
         follows = False
         user = self.request.user
         id = self.kwargs.get('pk')
@@ -85,12 +89,15 @@ class DriveDetailView(DetailView):
             if user.profile.follows.filter(id=id).first():
                 follows = True
 
+        # drive notifications
         drive = Drive.objects.get(id=id)
-        notifications = Notifications.objects.filter(drive=drive).order_by('-date_posted')
+        notifications = Paginator(Notifications.objects.filter(drive=drive).order_by('-date_posted'), 5)
+
+        # drive stats
         total_dono = drive.donation_set.filter(approved=True).count()
 
         context['follows'] = follows
-        context['notifications'] = notifications
+        context['notifications'] = notifications.get_page(page)
         context['total_dono'] = total_dono
         return context
 
@@ -195,13 +202,14 @@ def donate(request, pk, fnum):
 
 @login_required()
 def donations(request, pk):
-    donations = Drive.objects.get(pk=pk).donation_set.all().order_by('-date')
+    page = request.GET.get('page')
+    donations = Paginator(Drive.objects.get(pk=pk).donation_set.all().order_by('-date'), 10)
     author = Drive.objects.get(pk=pk).author
 
     if request.user != author:
         raise PermissionDenied()
 
-    context = {'donations': donations}
+    context = {'donations': donations.get_page(page)}
     return render(request, 'donos/donations.html', context=context)
 
 
@@ -329,10 +337,12 @@ def locations_map(request):
 
 # org profile page
 def organization_view(request, pk):
+    page = request.GET.get('page')
+
     org = Organization.objects.get(id=pk)
-    drives = org.drive_set.all()
+    drives = Paginator(org.drive_set.all(), 5)
     context = {'org': org,
-               'drives': drives}
+               'drives': drives.get_page(page)}
     return render(request, 'donos/organization_view.html', context=context)
 
 
