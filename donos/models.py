@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.urls import reverse
+from PIL import Image
 
 # Create your models here.
 
@@ -13,6 +14,8 @@ class Organization(models.Model):
     description = models.TextField(max_length=1000)
     # TODO file = models.ImageField(default='default.jpg', upload_to='profile_pics')
     verified = models.BooleanField(default=False)
+    logo = models.ImageField(default='log_pics/default.jpg', upload_to='logo_pics')
+    header = models.ImageField(default='header_pics/default.png', upload_to='header_pics')
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     # abbreviated state name
@@ -20,10 +23,27 @@ class Organization(models.Model):
     zipcode = models.CharField(max_length=5)
     email = models.EmailField()
     file = models.FileField(default='verification_files/default.pdf', upload_to='verification_files',
-                            validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
+                            validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+                            verbose_name="Verification Pdf")
 
     def __str__(self):
         return self.name
+
+    # resize images
+    def save(self, *args, **kwargs):
+        super(Organization, self).save(*args, **kwargs)
+
+        logo = Image.open(self.logo.path)
+        header = Image.open(self.header.path)
+
+        if logo.height > 300 or logo.width > 300:
+            output_size = (300, 300)
+            logo.thumbnail(output_size)
+            logo.save(self.logo.path)
+        if header.height > 300 or header.width > 300:
+            output_size = (300, 300)
+            header.thumbnail(output_size)
+            header.save(self.header.path)
 
 
 class Category(models.Model):
@@ -56,6 +76,7 @@ class Drive(models.Model):
     # abbreviated state name
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
+    banner = models.ImageField(default='banner_pics/default.jpg', upload_to='banner_pics')
     category = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -63,6 +84,17 @@ class Drive(models.Model):
 
     def get_absolute_url(self):
         return reverse('drive-detail', kwargs={'pk': self.pk})
+
+    # resize images
+    def save(self, *args, **kwargs):
+        super(Drive, self).save(*args, **kwargs)
+
+        img = Image.open(self.banner.path)
+
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.banner.path)
 
 
 # TODO NO LONGER NEEDED

@@ -23,7 +23,7 @@ class DriveForm(forms.ModelForm):
                                             required=True)
     class Meta:
         model = Drive
-        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode', 'categories']
+        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode', 'categories', 'banner']
 
 
 class DonationForm(forms.ModelForm):
@@ -41,6 +41,7 @@ class DonationForm(forms.ModelForm):
         self.fields['category'] = forms.ModelChoiceField(queryset=Drive.objects.filter(id=id).first().category.all())
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
+
 
 class DonationFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
