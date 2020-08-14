@@ -18,6 +18,7 @@
                         <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'drive-delete' object.id %}">Delete</a>
                         <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'drive-notification-post' object.id %}">Post Notification</a>
                         <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'drive-donations' object.id %}">Donations</a>
+                        <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'drive-stats' object.id %}">Stats</a>
                     </div>
                 {% endif %}
             </div>
@@ -51,6 +52,13 @@
               <div>
                   Total Donations: {{ total_dono }}
               </div>
+            <!-- WIP top donor
+              <div>
+                  {% if top_donor is not None %}
+                    Top Donor: {{ top_donor.username }}
+                  {% endif %}
+              </div>
+              -->
 
             <!-- Drive user buttons -->
             {% if user.is_authenticated %}

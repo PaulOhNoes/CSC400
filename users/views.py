@@ -3,8 +3,9 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Count
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from donos.models import Notifications, Donation
+from donos.models import Notifications, Donation, Drive
 from itertools import chain
 
 # Create your views here.
@@ -51,7 +52,26 @@ def register2(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    user = request.user
+    donations = user.donation_set.count()
+    donations_approved = user.donation_set.filter(approved=True).count()
+    fav = user.donation_set.all().values('drive').annotate(total=Count('drive')).order_by('-total').first()
+
+    fav_drive = None
+    fav_total = None
+
+    # checks if user has donated
+    if fav is not None:
+        fav_drive = Drive.objects.get(pk=fav['drive'])
+        fav_total = fav['total']
+
+    context = {
+        'donations': donations,
+        'donations_approved': donations_approved,
+        'fav_drive': fav_drive,
+        'fav_drive_donations': fav_total,
+    }
+    return render(request, 'users/profile.html', context=context)
 
 
 @login_required

@@ -1,0 +1,32 @@
+{% extends "donos/base.html" %}
+{% block content %}
+    <h1>{{ drive.title}} Stats</h1>
+    <div>
+        <h4>Time Left: {{ time_left.days}} days left</h4>
+    </div>
+
+     <!-- display category stats-->
+    <div>
+        <h4>Donation Categories</h4>
+        {% for key,value in dict.items %}
+            <p>{{ key }} - {{ value }}</p>
+        {% endfor %}
+    </div>
+    <div>
+        <h4>Donations Count</h4>
+        <p>Total Donations: {{ total_dono }}</p>
+        <p>Total Approved: {{ total_approved }}</p>
+        <p>Total Not Approved: {{ total_unapproved }}</p>
+    </div>
+    <div>
+        <h4>Top 3 Donors</h4>
+        {% if top_donors %}
+            {% for donor in top_donors %}
+                <p>Donor: {{ donor.username }}</p>
+            {% endfor %}
+        {% else %}
+            <p>You have no donors</p>
+        {% endif %}
+    </div>
+{% endblock %}
+

@@ -6,6 +6,7 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.urls import reverse
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
 from .models import *
@@ -120,7 +121,6 @@ class DriveDetailView(DetailView):
 
 class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Drive
-    # fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode']
     form_class = DriveForm
 
     # setting the Drive author and org
@@ -274,6 +274,51 @@ def donation_edit(request, pk, dnum):
     return render(request, 'donos/donation_edit.html', {'formset': formset})
 
 
+@login_required()
+def drive_stats(request, pk):
+    drive = Drive.objects.get(id=pk)
+
+    if request.user != drive.author:
+        raise PermissionDenied()
+
+    # empty dictionary for categories count
+    dict = {}
+
+    # initialize values for dictionary
+    for x in Category.objects.all():
+        dict[x.name] = 0
+
+    drives = Drive.objects.get(pk=pk).donation_set.all()
+
+    # donations count
+    total_dono = drive.donation_set.count()
+    total_approved = drive.donation_set.filter(approved=True).count()
+    total_unapproved = total_dono - total_approved
+
+    donors = drive.donation_set.values('user').annotate(total=Count('user')).order_by('-total')[0:3]
+    top_donors = []
+    if donors is not None:
+        for donor in donors:
+            top_donors.append(User.objects.get(pk=donor['user']))
+
+    # add approved items to dictionary count
+    for drive in drives.all().filter(approved=True):
+        dono = drive.donationitem_set.all()
+        for item in dono:
+            dict[item.category.name] = dict[item.category.name] + item.quantity
+
+    drive = Drive.objects.get(id=pk)
+
+    context = {'drive': drive,
+               'dict': dict,
+               'total_dono': total_dono,
+               'total_approved': total_approved,
+               'total_unapproved': total_unapproved,
+               'top_donors': top_donors,
+               'time_left': drive.time_left
+               }
+    return render(request, 'donos/drive_stats.html', context=context)
+
 
 @login_required()
 def notification_post(request, pk):
@@ -344,7 +389,8 @@ def locations_list(request):
 
 
 def locations_map(request):
-    link = None
+    link = 'https://www.google.com/maps/embed/v1/search?key={}&q={}'
+    api_key = os.getenv('api_key')
 
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -352,9 +398,9 @@ def locations_map(request):
             data = form.cleaned_data['search']
             text_query = 'charity OR food bank in {}'.format(data)
             text_query = text_query.replace(" ", "+")
-            api_key = os.getenv('api_key')
-            link = 'https://www.google.com/maps/embed/v1/search?key={}&q={}'.format(api_key, text_query)
+            link = link.format(api_key, text_query)
     else:
+        link = 'https://www.google.com/maps/embed/v1/search?key={}&q=charity+OR+food+bank+in+{}'.format(api_key, request.user.profile.zipcode)
         form = SearchForm()
 
     context = {

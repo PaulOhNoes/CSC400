@@ -23,7 +23,7 @@ from users import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('donos/', include('donos.urls')),
+    path('', include('donos.urls')),
     path('profile/', include('users.urls')),
     path('register/', user_views.register, name='register'),
     path('register2/', user_views.register2, name='register2'),

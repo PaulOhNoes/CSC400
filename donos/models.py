@@ -69,7 +69,6 @@ class Drive(models.Model):
     content = models.TextField(max_length=1000)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=timezone.now)
-    # active = models.BooleanField(default=True)
     orgID = models.ForeignKey(Organization, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=50)
@@ -107,6 +106,14 @@ class Drive(models.Model):
             return True
         else:
             return False
+
+    # time left before expiration
+    @property
+    def time_left(self):
+        if timezone.now() < self.end_date:
+            return self.end_date - timezone.now()
+        else:
+            return 0
 
 
 # TODO NO LONGER NEEDED

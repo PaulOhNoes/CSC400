@@ -3,9 +3,9 @@
 {% block content %}
     <h2>{{ org.name}}</h2>
     <p>VERIFIED: {{ org.verified }}</p>
-    <p>{{ org.description}}</p>
-    <p>{{ org.address }}, {{ org.city }} {{ org.state }}</p>
-    <p>{{ org.email }}</p>
+    <p>Description: {{ org.description}}</p>
+    <p>Address: {{ org.address }}, {{ org.city }} {{ org.state }}</p>
+    <p>Email: {{ org.email }}</p>
 
     {% if org.id is user.organization.id %}
         <a href="{% url 'donos-organization-settings' %}">Settings</a>

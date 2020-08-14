@@ -19,6 +19,7 @@ urlpatterns = [
     path('drive/<int:pk>/donate/<int:dnum>/edit/', views.donation_edit, name='drive-donation-edit'),
     path('drive/<int:pk>/donations', views.donations, name='drive-donations'),
     path('drive/<int:pk>/notification_post/', views.notification_post, name='drive-notification-post'),
+    path('drive/<int:pk>/stats/', views.drive_stats, name='drive-stats'),
     path('drive/<int:pk>/<int:id>/notification_view/', views.notification_view, name='drive-notification-view'),
     path('drive/new/', DriveCreateView.as_view(), name='drive-create'),
     path('organization/new/', views.org_register, name='donos-new_organization'),
