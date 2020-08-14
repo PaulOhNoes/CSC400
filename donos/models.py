@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.urls import reverse
+from mptt.models import MPTTModel, TreeForeignKey
 
 # Create your models here.
 
@@ -93,7 +94,3 @@ class Notifications(models.Model):
     description = models.TextField(max_length=500)
     date_posted = models.DateTimeField(default=timezone.now)
     drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Notifications"
-        verbose_name_plural = "Notifications"

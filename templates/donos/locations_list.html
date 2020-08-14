@@ -4,7 +4,7 @@
     <h1>locations list</h1>
     <a href="{% url 'locations-map' %}">Map</a>
     <div class="content-section">
-        <form method="POST">
+        <form method="POST" name="location-list">
          {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Search Charities</legend>
@@ -21,7 +21,12 @@
                 <p>{{ record.name }} - {{ record.formatted_address }}</p>
             </div>
         {% endfor %}
-
     </div>
+    <iframe
+      width="600"
+      height="450"
+      frameborder="0" style="border:0"
+      src={{ link }} allowfullscreen>
+    </iframe>
 {% endblock %}
 

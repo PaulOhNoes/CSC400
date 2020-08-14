@@ -289,7 +289,8 @@ def locations_list(request):
 
 
 def locations_map(request):
-    link = None
+    link = 'https://www.google.com/maps/embed/v1/search?key={}&q={}'
+    api_key = os.getenv('api_key')
 
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -297,9 +298,9 @@ def locations_map(request):
             data = form.cleaned_data['search']
             text_query = 'charity OR food bank in {}'.format(data)
             text_query = text_query.replace(" ", "+")
-            api_key = os.getenv('api_key')
-            link = 'https://www.google.com/maps/embed/v1/search?key={}&q={}'.format(api_key, text_query)
+            link = link.format(api_key, text_query)
     else:
+        link = link.format(api_key, request.user.profile.zipcode)
         form = SearchForm()
 
     context = {
