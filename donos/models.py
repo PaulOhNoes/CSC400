@@ -133,7 +133,3 @@ class Notifications(models.Model):
     description = models.TextField(max_length=500)
     date_posted = models.DateTimeField(default=timezone.now)
     drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Notifications"
-        verbose_name_plural = "Notifications"
