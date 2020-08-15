@@ -1,6 +1,7 @@
 {% extends "donos/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+    <h1>Donation</h1>
     <form method="POST">
          {% csrf_token %}
         {{formset.as_p}}

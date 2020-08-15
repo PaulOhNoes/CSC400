@@ -4,8 +4,9 @@
 
     <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="{% static 'donos/drives.css' %}">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.0.2/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.0.2/css/font-awesome.min.css">
 
+  <h1>All Drives</h1>
     {# display city and state filter buttons if user is logged in#}
     {% if user.is_authenticated %}
         <div>
@@ -23,7 +24,11 @@
       <div class="photo" style="background-image: url(https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731)"></div>
       <ul class="details">
         <li class="author">{{ drive.author }}</li>
-        <li class="date">{{ drive.start_date|date:"F d, Y" }}</li>
+        {% if drive.is_expired %}
+          <li class="date">EXPIRED on {{ drive.end_date|date:"F d, Y" }}</li>
+        {% else %}
+          <li class="date">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</li>
+        {% endif %}
       </ul>
     </div>
     <div class="description">
@@ -52,7 +57,7 @@
 
         {% if page_obj.has_next %}
             <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.next_page_number }}">Next</a>
-            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_page }}">Last</a>
+            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_pages }}">Last</a>
         {% endif %}
 
     {% endif %}

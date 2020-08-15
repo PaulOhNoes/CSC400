@@ -1,0 +1,35 @@
+{% extends "donos/base.html" %}
+{% block content %}
+    <h1>Notifications</h1>
+    <a href="{% url 'users-announcements-donations' %}">My Donations</a>
+    {% for notification in data %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ notification.date_posted|date:"F d, Y" }}</small>
+            </div>
+            <h2><a class="article-title" href="{% url 'drive-notification-view' notification.drive.id notification.id %}">{{ notification.title }}</a></h2>
+            <p class="article-content">{{ notification.description }}</p>
+          </div>
+        </article>
+    {% endfor %}
+
+    {% if data.has_previous %}
+        <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
+        <a class='btn btn-outline-info mb-4'href="?page={{ data.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    {% for num in data.paginator.page_range %}
+        {% if data.number == num %}
+            <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
+        {% elif num > data.number|add:'-3' and num < data.number|add:'-3' %}
+            <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if data.has_next %}
+        <a class='btn btn-outline-info mb-4'href="?page={{ data.next_page_number }}">Next</a>
+        <a class='btn btn-outline-info mb-4'href="?page={{ data.paginator.num_pages }}">Last</a>
+    {% endif %}
+{% endblock %}
+

@@ -5,10 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse, request
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count
 from django.urls import reverse
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
-from .models import Drive, Notifications, Organization, Donation
-from donos.models import User, UserDrives
+from .models import *
+from donos.models import *
 from users.forms import OrganizationForm, OrganizationUpdateForm
 from .forms import *
 import requests
@@ -17,13 +19,24 @@ import os
 # Create your views here.
 
 
+def error_404(request, exception):
+    data = {}
+    return render(request, 'donos/404.html', data)
+
+
+def error_403(request, exception):
+    data = {}
+    return render(request, 'donos/403.html', data)
+
+
 class DriveListView(ListView):
     model = Drive
     template_name = 'donos/home.html'
     context_object_name = 'drives'
-    # newest to oldest drives
-    ordering = ['-start_date']
     paginate_by = 5
+
+    def get_queryset(self):
+        return Drive.objects.filter(end_date__gt=timezone.now()).order_by('-start_date')
 
 
 class CityDriveListView(ListView):
@@ -34,7 +47,10 @@ class CityDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Drive.objects.filter(city=user.profile.city).filter(state=user.profile.state).order_by('-start_date')
+        return Drive.objects.filter(end_date__gt=timezone.now())\
+            .filter(city=user.profile.city)\
+            .filter(state=user.profile.state)\
+            .order_by('-start_date')
 
 
 class StateDriveListView(ListView):
@@ -45,7 +61,9 @@ class StateDriveListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Drive.objects.filter(state=user.profile.state).order_by('-start_date')
+        return Drive.objects.filter(end_date__gt=timezone.now())\
+            .filter(state=user.profile.state)\
+            .order_by('-start_date')
 
 
 class FollowDriveListView(ListView):
@@ -76,27 +94,34 @@ class DriveDetailView(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DriveDetailView, self).get_context_data(**kwargs)
+
+        page = self.request.GET.get('page')
+
+        follows = False
         user = self.request.user
         id = self.kwargs.get('pk')
 
-        if user.profile.follows.filter(id=id).first():
-            follows = True
-        else:
-            follows = False
+        # Checks if the user follows the drive
+        if self.request.user.is_authenticated:
+            if user.profile.follows.filter(id=id).first():
+                follows = True
 
+        # drive notifications
         drive = Drive.objects.get(id=id)
-        notifications = Notifications.objects.filter(drive=drive).order_by('-date_posted')
+        notifications = Paginator(Notifications.objects.filter(drive=drive).order_by('-date_posted'), 5)
+
+        # drive stats
         total_dono = drive.donation_set.filter(approved=True).count()
 
         context['follows'] = follows
-        context['notifications'] = notifications
+        context['notifications'] = notifications.get_page(page)
         context['total_dono'] = total_dono
+        context['followers'] = drive.followed_by.count()
         return context
 
 
 class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Drive
-    # fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode']
     form_class = DriveForm
 
     # setting the Drive author and org
@@ -121,7 +146,7 @@ class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Drive
     template_name = 'donos/drive_form.html'
-    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode']
+    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode', 'progress']
 
     def test_func(self):
         drive = self.get_object()
@@ -194,14 +219,36 @@ def donate(request, pk, fnum):
 
 @login_required()
 def donations(request, pk):
-    donations = Drive.objects.get(pk=pk).donation_set.all().order_by('-date')
+    page = request.GET.get('page')
+
+    query = Drive.objects.get(pk=pk).donation_set.all()
+    donations = Paginator(query.order_by('-date'), 10)
     author = Drive.objects.get(pk=pk).author
 
     if request.user != author:
         raise PermissionDenied()
 
-    context = {'donations': donations}
+    if request.method == 'POST':
+        form = DonationSearchForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['search']
+            return redirect('drive-donation-edit', pk, data)
+
+    else:
+        form = DonationSearchForm()
+
+    context = {'donations': donations.get_page(page),
+               'form': form, }
     return render(request, 'donos/donations.html', context=context)
+
+
+@login_required()
+def donation_view(request, pk, dnum):
+    donation = Donation.objects.get(pk=dnum)
+    context = {
+        'donation': donation,
+    }
+    return render(request, 'donos/donation_view.html', context)
 
 
 @login_required()
@@ -211,7 +258,8 @@ def donation_edit(request, pk, dnum):
     d = Donation.objects.get(pk=dnum)
     formset = edit_form(instance=d)
 
-    if request.user != d.drive.author:
+    # user must be the owner and using the respective drive
+    if request.user != d.drive.author or pk != d.drive.id:
         raise PermissionDenied()
 
     if request.method == 'POST':
@@ -226,6 +274,52 @@ def donation_edit(request, pk, dnum):
             return redirect('drive-detail', pk)
     return render(request, 'donos/donation_edit.html', {'formset': formset})
 
+
+@login_required()
+def drive_stats(request, pk):
+    drive = Drive.objects.get(id=pk)
+
+    if request.user != drive.author:
+        raise PermissionDenied()
+
+    # empty dictionary for categories count
+    dict = {}
+
+    # initialize values for dictionary
+    for x in Category.objects.all():
+        dict[x.name] = 0
+
+    drives = Drive.objects.get(pk=pk).donation_set.all()
+
+    # donations count
+    total_dono = drive.donation_set.count()
+    total_approved = drive.donation_set.filter(approved=True).count()
+    total_unapproved = total_dono - total_approved
+
+    donors = drive.donation_set.values('user').annotate(total=Count('user')).order_by('-total')[0:3]
+    top_donors = []
+    if donors is not None:
+        for donor in donors:
+            top_donors.append(User.objects.get(pk=donor['user']))
+
+    # add approved items to dictionary count
+    for drive in drives.all().filter(approved=True):
+        dono = drive.donationitem_set.all()
+        for item in dono:
+            dict[item.category.name] = dict[item.category.name] + item.quantity
+
+    drive = Drive.objects.get(id=pk)
+
+    context = {'drive': drive,
+               'dict': dict,
+               'total_dono': total_dono,
+               'total_approved': total_approved,
+               'total_unapproved': total_unapproved,
+               'top_donors': top_donors,
+               'time_left': drive.time_left,
+               'followers': drive.followed_by.count()
+               }
+    return render(request, 'donos/drive_stats.html', context=context)
 
 
 @login_required()
@@ -245,10 +339,16 @@ def notification_post(request, pk):
             messages.success(request, f'Your notification has been sent!')
             return redirect('drive-detail', pk=pk)
     else:
-        form = NotificationForm(instance=request.user.organization)
+        form = NotificationForm()
 
     context = {'form': form}
     return render(request, 'donos/notification_post.html', context=context)
+
+
+def notification_view(request, pk, id):
+    data = Drive.objects.get(id=pk).notifications_set.get(pk=id)
+    context = {'notification': data}
+    return render(request, 'donos/notification_view.html', context=context)
 
 
 def locations_list(request):
@@ -276,6 +376,8 @@ def locations_list(request):
                                      'formatted_address': data['results'][x]['formatted_address'],
                                      'business_status': data['results'][x]['business_status'],
                                      'user_ratings_total': data['results'][x]['user_ratings_total'], })
+
+                # Not all results have opening hours
                 try:
                     list_results[x]['open'] = data['results'][x]['opening_hours']['open_now']
                 except:
@@ -300,7 +402,7 @@ def locations_map(request):
             text_query = text_query.replace(" ", "+")
             link = link.format(api_key, text_query)
     else:
-        link = link.format(api_key, request.user.profile.zipcode)
+        link = 'https://www.google.com/maps/embed/v1/search?key={}&q=charity+OR+food+bank+in+{}'.format(api_key, request.user.profile.zipcode)
         form = SearchForm()
 
     context = {
@@ -312,10 +414,12 @@ def locations_map(request):
 
 # org profile page
 def organization_view(request, pk):
+    page = request.GET.get('page')
+
     org = Organization.objects.get(id=pk)
-    drives = org.drive_set.all()
+    drives = Paginator(org.drive_set.all(), 5)
     context = {'org': org,
-               'drives': drives}
+               'drives': drives.get_page(page)}
     return render(request, 'donos/organization_view.html', context=context)
 
 
@@ -357,7 +461,7 @@ def org_settings(request):
             form.save()
 
             messages.success(request, f'Your organization has been updated!')
-            return redirect('donos-organization')
+            return redirect('donos-organization-view', request.user.organization.id)
     else:
         form = OrganizationUpdateForm(instance=request.user.organization)
 

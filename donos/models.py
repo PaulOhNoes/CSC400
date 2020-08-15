@@ -1,29 +1,47 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django.urls import reverse
-from mptt.models import MPTTModel, TreeForeignKey
+from PIL import Image
 
 # Create your models here.
-
 
 class Organization(models.Model):
     user = models.OneToOneField(User,  on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
-    # TODO file = models.ImageField(default='default.jpg', upload_to='profile_pics')
     verified = models.BooleanField(default=False)
+    logo = models.ImageField(default='logo_pics/default.jpg', upload_to='logo_pics')
+    header = models.ImageField(default='header_pics/default.png', upload_to='header_pics')
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     # abbreviated state name
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
+    email = models.EmailField()
     file = models.FileField(default='verification_files/default.pdf', upload_to='verification_files',
-                            validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
+                            validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+                            verbose_name="Verification Pdf")
 
     def __str__(self):
         return self.name
+
+    # resize images
+    def save(self, *args, **kwargs):
+        super(Organization, self).save(*args, **kwargs)
+
+        logo = Image.open(self.logo.path)
+        header = Image.open(self.header.path)
+
+        if logo.height > 300 or logo.width > 300:
+            output_size = (300, 300)
+            logo.thumbnail(output_size)
+            logo.save(self.logo.path)
+        if header.height > 300 or header.width > 300:
+            output_size = (300, 300)
+            header.thumbnail(output_size)
+            header.save(self.header.path)
 
 
 class Category(models.Model):
@@ -56,6 +74,10 @@ class Drive(models.Model):
     # abbreviated state name
     state = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
+    banner = models.ImageField(default='banner_pics/default.jpg', upload_to='banner_pics')
+    progress = models.IntegerField(default=1,
+                                   validators=[MaxValueValidator(100, 'Integer value must be between 1 and 100'),
+                                               MinValueValidator(1, 'Integer value must be between 1 and 100')])
     category = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -64,12 +86,32 @@ class Drive(models.Model):
     def get_absolute_url(self):
         return reverse('drive-detail', kwargs={'pk': self.pk})
 
+    # resize images
+    def save(self, *args, **kwargs):
+        super(Drive, self).save(*args, **kwargs)
 
-# TODO NO LONGER NEEDED
-class UserDrives(models.Model):
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
-    join_date = models.DateTimeField(default=timezone.now)
+        img = Image.open(self.banner.path)
+
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.banner.path)
+
+    # Check to see if the drive is expired
+    @property
+    def is_expired(self):
+        if timezone.now() > self.end_date:
+            return True
+        else:
+            return False
+
+    # time left before expiration
+    @property
+    def time_left(self):
+        if timezone.now() < self.end_date:
+            return self.end_date - timezone.now()
+        else:
+            return 0
 
 
 class Donation(models.Model):
@@ -77,9 +119,6 @@ class Donation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     approved = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
-    # TODO verification code
-    # UUID is randomly generated code
-    # code = models.UUIDField()
 
 
 class DonationItem(models.Model):

@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from donos.models import Notifications, Donation, Drive
+from itertools import chain
 
 # Create your views here.
 
@@ -48,12 +52,61 @@ def register2(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    user = request.user
+    donations = user.donation_set.count()
+    donations_approved = user.donation_set.filter(approved=True).count()
+    fav = user.donation_set.all().values('drive').annotate(total=Count('drive')).order_by('-total').first()
+
+    fav_drive = None
+    fav_total = None
+
+    # checks if user has donated
+    if fav is not None:
+        fav_drive = Drive.objects.get(pk=fav['drive'])
+        fav_total = fav['total']
+
+    context = {
+        'donations': donations,
+        'donations_approved': donations_approved,
+        'fav_drive': fav_drive,
+        'fav_drive_donations': fav_total,
+    }
+    return render(request, 'users/profile.html', context=context)
 
 
 @login_required
-def announcements(request):
-    return render(request, 'users/announcements.html')
+def announcements_drives(request):
+    user = request.user
+    drives = user.profile.follows.all()
+
+    page = request.GET.get('page')
+
+    # create an empty queryset
+    q = Notifications.objects.none()
+
+    # union multiple queries together
+    for drive in drives:
+        q = q.union(drive.notifications_set.all())
+
+    q = Paginator(q.order_by('-date_posted'), 5)
+    context = {
+        'data': q.get_page(page),
+    }
+    return render(request, 'users/announcements_drives.html', context=context)
+
+
+@login_required
+def announcements_donations(request):
+    user = request.user
+
+    page = request.GET.get('page')
+
+    data = Paginator(user.donation_set.all().order_by('-date'),5)
+
+    context = {
+        'data': data.get_page(page),
+    }
+    return render(request, 'users/announcements_donations.html', context=context)
 
 
 @login_required

@@ -11,6 +11,10 @@ class SearchForm(forms.Form):
                              widget=forms.TextInput(attrs={'placeholder': 'Input City/Zip Code'}))
 
 
+class DonationSearchForm(forms.Form):
+    search = forms.IntegerField(label='search', widget=forms.TextInput(attrs={'placeholder': 'Input Donation ID'}))
+
+
 class NotificationForm(forms.ModelForm):
     class Meta:
         model = Notifications
@@ -20,10 +24,12 @@ class NotificationForm(forms.ModelForm):
 
 class DriveForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(queryset=Category.objects, widget=forms.CheckboxSelectMultiple(),
-                                            required=True)
+                                                required=True)
+
     class Meta:
         model = Drive
-        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city', 'state', 'zipcode', 'categories']
+        fields = ['title', 'content', 'start_date', 'end_date', 'address', 'city',
+                  'state', 'zipcode', 'categories', 'banner']
 
 
 class DonationForm(forms.ModelForm):
@@ -41,27 +47,6 @@ class DonationForm(forms.ModelForm):
         self.fields['category'] = forms.ModelChoiceField(queryset=Drive.objects.filter(id=id).first().category.all())
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
-
-        # self.helper.layout = Layout(
-        #         Div(
-        #                 'name',
-        #                 css_class='form-group',
-        #         ),
-        #         Div(
-        #             Div(
-        #                 'quantity',
-        #                 css_class='form-group col-md-6',
-        #             ),
-        #             Div(
-        #                 'quantity',
-        #                 css_class='form-group col-md-6',
-        #             ),
-        #             css_class='form-row',
-        #         )
-        # )
-
-
-# DonationFormSet = formset_factory(DonationForm, extra=2)
 
 
 class DonationFormSetHelper(FormHelper):

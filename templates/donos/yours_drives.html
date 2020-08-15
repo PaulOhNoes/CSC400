@@ -23,7 +23,11 @@
       <div class="photo" style="background-image: url(https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731)"></div>
       <ul class="details">
         <li class="author">{{ drive.author }}</li>
-        <li class="date">{{ drive.start_date|date:"F d, Y" }}</li>
+        {% if drive.is_expired %}
+          <li class="date">EXPIRED on {{ drive.end_date|date:"F d, Y" }}</li>
+        {% else %}
+          <li class="date">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</li>
+        {% endif %}
       </ul>
     </div>
     <div class="description">
@@ -34,6 +38,25 @@
       </p>
     </div>
   </div>
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ drive.author }}</a> // <a class="mr-2" href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a>
+                {% if drive.is_expired %}
+                    <small class="text-muted"> EXPIRED on {{ drive.end_date|date:"F d, Y" }}</small>
+                {% else %}
+                    <small class="text-muted">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>
+                {% endif %}
+            </div>
+            <h2><a class="article-title" href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h2>
+            <p>
+                {% for category in drive.category.all %}
+                    <span class="badge badge-primary">{{ category.name }}</span>
+                {% endfor %}
+            </p>
+            <p class="article-content">{{ drive.content }}</p>
+          </div>
+        </article>
     {% endfor %}
     {% if is_paginated %}
         {% if page_obj.has_previous %}
@@ -51,7 +74,7 @@
 
         {% if page_obj.has_next %}
             <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.next_page_number }}">Next</a>
-            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_page }}">Last</a>
+            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_pages }}">Last</a>
         {% endif %}
 
     {% endif %}

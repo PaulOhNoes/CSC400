@@ -42,8 +42,13 @@
                                href="{% url 'donos-organization-view' drive.orgID.id %}"><span>{{ drive.orgID }}</span></a>
                         </div>
                         <div id="i-box">
-                            <div id="intro-line"><small>{{ drive.start_date|date:"F d, Y" }}
-                                - {{ drive.start_date|date:"F d, Y" }}</small></div>
+                            <div id="intro-line">
+                              {% if drive.is_expired %}
+                                  <small>Expired on - {{ drive.end_date|date:"F d, Y" }}</small>
+                              {% else %}
+                                  <small>{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>
+                              {% endif %}
+                            </div>
                             <div id="u-occ">Drop Off
                                 Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}</div>
                             {% for category in object.category.all %}
@@ -83,6 +88,12 @@
                                                 <span>Delete Drive</span>
                                             </a>
                                         </div>
+                                        <div class="td">
+                                            <a href="{% url 'drive-stats' object.id %}">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                <span>Stats</span>
+                                            </a>
+                                        </div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -119,10 +130,27 @@
                     </div>
                 </div>
             </div>
+          <!-- 
+            <!-- Pagination buttons -->
+            {% if notifications.has_previous %}
+                <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
+                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in notifications.paginator.page_range %}
+                {% if notifications.number == num %}
+                    <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'-3' %}
+                    <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if notifications.has_next %}
+                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>
+                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_pages }}">Last</a>
+            {% endif %}
+          -->
         </div>
     </main>
-
-
-
 {% endblock %}
 

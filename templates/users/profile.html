@@ -23,4 +23,21 @@
       </div>
         <a href="{% url 'users-settings' %}">Settings</a>
     </div>
+    <div>
+        <h2>User Stats</h2>
+        <div>
+            <div>
+                Submitted Donations: {{ donations }}
+            </div>
+            <div>
+                Approved Donations: {{ donations_approved }}
+            </div>
+            <div>
+                {% if fav_drive is not None and fav_drive_donations is not None %}
+                    <h3>Favorite Drive</h3>
+                  <a href="{% url 'drive-detail' fav_drive.id %}">{{ fav_drive.title}}</a> with a total of {{ fav_drive_donations }} donations!
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
