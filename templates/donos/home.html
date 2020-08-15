@@ -6,8 +6,11 @@
   <link rel="stylesheet" type="text/css" href="{% static 'donos/drives.css' %}">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.0.2/css/font-awesome.min.css">
 
-  <h1>All Drives</h1>
-    {# display city and state filter buttons if user is logged in#}
+    <div class="row justify-content-md-left">
+
+        <div class="col col-md-8">
+        <h1>All Drives</h1>
+            {# display city and state filter buttons if user is logged in#}
     {% if user.is_authenticated %}
         <div>
         <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>
@@ -61,4 +64,8 @@
         {% endif %}
 
     {% endif %}
+        </div>
+
+    </div>
+
 {% endblock %}
