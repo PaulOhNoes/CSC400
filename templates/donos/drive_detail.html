@@ -1,7 +1,5 @@
 {% extends "donos/base.html" %}
 {% block content %}
-    <h1>{{ drive.title }}</h1>
-
     <!-- Drive container -->
     <article class="media content-section">
           <div class="media-body">
@@ -52,13 +50,9 @@
               <div>
                   Total Donations: {{ total_dono }}
               </div>
-            <!-- WIP top donor
               <div>
-                  {% if top_donor is not None %}
-                    Top Donor: {{ top_donor.username }}
-                  {% endif %}
+                  Total Followers: {{ followers }}
               </div>
-              -->
 
             <!-- Drive user buttons -->
             {% if user.is_authenticated %}

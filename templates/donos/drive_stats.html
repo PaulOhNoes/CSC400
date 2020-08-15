@@ -2,7 +2,14 @@
 {% block content %}
     <h1>{{ drive.title}} Stats</h1>
     <div>
-        <h4>Time Left: {{ time_left.days}} days left</h4>
+        <h4>
+        {% if time_left is not 0%}
+            Time Left: {{ time_left.days}} days left
+        {% else %}
+            Time Left: EXPIRED
+        {% endif %}
+        </h4>
+        <h4>Followers: {{ followers }}</h4>
     </div>
 
      <!-- display category stats-->

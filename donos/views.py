@@ -116,6 +116,7 @@ class DriveDetailView(DetailView):
         context['follows'] = follows
         context['notifications'] = notifications.get_page(page)
         context['total_dono'] = total_dono
+        context['followers'] = drive.followed_by.count()
         return context
 
 
@@ -315,7 +316,8 @@ def drive_stats(request, pk):
                'total_approved': total_approved,
                'total_unapproved': total_unapproved,
                'top_donors': top_donors,
-               'time_left': drive.time_left
+               'time_left': drive.time_left,
+               'followers': drive.followed_by.count()
                }
     return render(request, 'donos/drive_stats.html', context=context)
 
@@ -459,7 +461,7 @@ def org_settings(request):
             form.save()
 
             messages.success(request, f'Your organization has been updated!')
-            return redirect('donos-organization')
+            return redirect('donos-organization-view', request.user.organization.id)
     else:
         form = OrganizationUpdateForm(instance=request.user.organization)
 

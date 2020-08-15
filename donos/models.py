@@ -7,14 +7,12 @@ from PIL import Image
 
 # Create your models here.
 
-
 class Organization(models.Model):
     user = models.OneToOneField(User,  on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
-    # TODO file = models.ImageField(default='default.jpg', upload_to='profile_pics')
     verified = models.BooleanField(default=False)
-    logo = models.ImageField(default='log_pics/default.jpg', upload_to='logo_pics')
+    logo = models.ImageField(default='logo_pics/default.jpg', upload_to='logo_pics')
     header = models.ImageField(default='header_pics/default.png', upload_to='header_pics')
     address = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -116,21 +114,11 @@ class Drive(models.Model):
             return 0
 
 
-# TODO NO LONGER NEEDED
-class UserDrives(models.Model):
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    driveID = models.ForeignKey(Drive, on_delete=models.CASCADE)
-    join_date = models.DateTimeField(default=timezone.now)
-
-
 class Donation(models.Model):
     drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     approved = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
-    # TODO verification code
-    # UUID is randomly generated code
-    # code = models.UUIDField()
 
 
 class DonationItem(models.Model):

@@ -1,6 +1,6 @@
 {% extends "donos/base.html" %}
 {% block content %}
-    <h1>{{ drives.0.state }}</h1>
+    <h1>{{ user.profile.state }}</h1>
     {# display city and state filter buttons if user is logged in#}
     {% if user.is_authenticated %}
         <div>
