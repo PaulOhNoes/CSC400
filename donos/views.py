@@ -146,7 +146,7 @@ class DriveCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Drive
     template_name = 'donos/drive_form.html'
-    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode', 'progress']
+    fields = ['title', 'content', 'end_date', 'address', 'city', 'state', 'zipcode', 'progress', 'banner']
 
     def test_func(self):
         drive = self.get_object()

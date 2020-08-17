@@ -2,20 +2,168 @@
 {% load static %}
 {% block content %}
 
-    <link rel="stylesheet" type="text/css" href="{% static 'donos/drive_detail.css' %}">
+{#    <link rel="stylesheet" type="text/css" href="{% static 'donos/drive_detail.css' %}">#}
+    <link rel="stylesheet" type="text/css" href="{% static 'donos/drives.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'donos/organization_view.css' %}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
 
-    <main>
-        <div id="profile-upper">
-            <div id="profile-banner-image">
-                <img src="https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731"
-                     alt="Banner image">
-            </div>
-            <div id="profile-d">
-                <div id="u-name">{{ drive.title }}</div>
-                <div class="tb" id="m-btns">
-                    <div class="td">
-                        {% if user.is_authenticated %}
+{#    <main>#}
+{#        <div id="profile-upper">#}
+{#            <div id="profile-banner-image">#}
+{#                <img src="https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731"#}
+{#                     alt="Banner image">#}
+{#            </div>#}
+{#            <div id="profile-d">#}
+{#                <div id="u-name">{{ drive.title }}</div>#}
+{#                <div class="tb" id="m-btns">#}
+{#                    <div class="td">#}
+{#                        {% if user.is_authenticated %}#}
+{#                            {% if follows %}#}
+{#                                <a id="follow-button" class="btn btn-danger btn-sm mt-1 mb-1"#}
+{#                                   href="{% url 'drive-unfollow' object.id %}">Unfollow</a>#}
+{#                            {% else %}#}
+{#                                <a id="follow-button" class="btn btn-info btn-sm mt-1 mb-1"#}
+{#                                   href="{% url 'drive-follow' object.id %}">Follow</a>#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                    <div class="td">#}
+{#                        <a class="donate" href="{% url 'drive-donate' pk=object.id fnum=1 %}">Donate</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div id="black-grd"></div>#}
+{#        </div>#}
+{#        <div id="main-content">#}
+{#            <div class="tb">#}
+{#                <div class="td" id="l-col">#}
+{#                    <div class="l-cnt">#}
+{#                        <div class="cnt-label">#}
+{#                            <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>#}
+{#                            <a class="mr-2"#}
+{#                               href="{% url 'donos-organization-view' drive.orgID.id %}"><span>{{ drive.orgID }}</span></a>#}
+{#                        </div>#}
+{#                        <div id="i-box">#}
+{#                            <div id="intro-line">#}
+{#                              {% if drive.is_expired %}#}
+{#                                  <small>Expired on - {{ drive.end_date|date:"F d, Y" }}</small>#}
+{#                              {% else %}#}
+{#                                  <small>{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>#}
+{#                              {% endif %}#}
+{#                            </div>#}
+{#                            <div id="u-occ">Drop Off#}
+{#                                Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}</div>#}
+{#                            {% for category in object.category.all %}#}
+{#                                <span class="badge badge-primary">{{ category.name }}</span>#}
+{#                            {% endfor %}#}
+{#                            <div id="u-occ">Total Donations: {{ total_dono }}</div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="td" id="m-col">#}
+{#                    <div class="m-mrg" id="p-tabs">#}
+{#                        <div class="tb">#}
+{#                            <div class="td">#}
+{#                                <div class="tb" id="p-tabs-m">#}
+{#                                    {% if object.author == user %}#}
+{#                                        <div class="td">#}
+{#                                            <a href="{% url 'drive-update' object.id %}">#}
+{#                                                <i class="fa fa-plus-circle" aria-hidden="true"></i>#}
+{#                                                <span>Update Drive</span>#}
+{#                                            </a>#}
+{#                                        </div>#}
+{#                                        <div class="td">#}
+{#                                            <a href="{% url 'drive-notification-post' object.id %}">#}
+{#                                                <i class="fa fa-bullhorn" aria-hidden="true"></i>#}
+{#                                                <span>Create Post</span>#}
+{#                                            </a>#}
+{#                                        </div>#}
+{#                                        <div class="td">#}
+{#                                            <a href="{% url 'drive-donations' object.id %}">#}
+{#                                                <i class="fa fa-gift" aria-hidden="true"></i>#}
+{#                                                <span>Donations</span>#}
+{#                                            </a>#}
+{#                                        </div>#}
+{#                                        <div class="td">#}
+{#                                            <a href="{% url 'drive-delete' object.id %}">#}
+{#                                                <i class="fa fa-trash" aria-hidden="true"></i>#}
+{#                                                <span>Delete Drive</span>#}
+{#                                            </a>#}
+{#                                        </div>#}
+{#                                        <div class="td">#}
+{#                                            <a href="{% url 'drive-stats' object.id %}">#}
+{#                                                <i class="fa fa-trash" aria-hidden="true"></i>#}
+{#                                                <span>Stats</span>#}
+{#                                            </a>#}
+{#                                        </div>#}
+{#                                    {% endif %}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="m-mrg" id="composer">#}
+{#                        <div id="c-c-main">#}
+{#                            <div class="tb">#}
+{#                                <div class="td" id="c-inp">#}
+{#                                    <p class="article-content">{{ drive.content }}</p>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div>#}
+{#                    {% for notification in notifications %}#}
+{#                        <div class="post">#}
+{#                            <div class="tb">#}
+{#                                <a href="#" class="td p-p-pic"><img src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"></a>#}
+{#                                <div class="td p-r-hdr">#}
+{#                                    <div class="p-u-info">#}
+{#                                        <h2>{{ notification.title }}</h2>#}
+{#                                    </div>#}
+{#                                    <div class="p-dt">#}
+{#                                        <span>{{ notification.date_posted|date:"F d, Y" }}</span>#}
+{#                                    </div>#}
+{#                                    <div class="media-body">#}
+{#                                        <p class="article-content">{{ notification.description }}</p>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#          <!-- #}
+{#            <!-- Pagination buttons -->#}
+{#            {% if notifications.has_previous %}#}
+{#                <a class='btn btn-outline-info mb-4'href="?page=1">First</a>#}
+{#                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.previous_page_number }}">Previous</a>#}
+{#            {% endif %}#}
+{##}
+{#            {% for num in notifications.paginator.page_range %}#}
+{#                {% if notifications.number == num %}#}
+{#                    <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>#}
+{#                {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'-3' %}#}
+{#                    <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>#}
+{#                {% endif %}#}
+{#            {% endfor %}#}
+{##}
+{#            {% if notifications.has_next %}#}
+{#                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>#}
+{#                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_pages }}">Last</a>#}
+{#            {% endif %}#}
+{#          -->#}
+{#        </div>#}
+{#    </main>#}
+
+    <div class="row ">
+        <div class="organization-container col no-padding">
+            <div class="row justify-content-start" id="profile-upper">
+                <img src="{{ drive.banner.url }}" alt="Banner image">
+                <div class="col-md-12 align-self-end" id="u-name">
+                    {{ drive.title }}
+                </div>
+                <div class="col-md-12 align-self-end" id="edit-profile">
+                    {% if user.is_authenticated %}
                             {% if follows %}
                                 <a id="follow-button" class="btn btn-danger btn-sm mt-1 mb-1"
                                    href="{% url 'drive-unfollow' object.id %}">Unfollow</a>
@@ -23,134 +171,174 @@
                                 <a id="follow-button" class="btn btn-info btn-sm mt-1 mb-1"
                                    href="{% url 'drive-follow' object.id %}">Follow</a>
                             {% endif %}
+                            <a class="donate" href="{% url 'drive-donate' pk=object.id fnum=1 %}">Donate</a>
+                        {% endif %}
+                </div>
+            </div>
+            <div class="row justify-content-around" id="main-content">
+                <div class="info-box border p-4 col-md-4 align-self-start">
+                    <div class="row cnt-label">
+                        <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>
+                        <a class="mx-1"
+                           href="{% url 'donos-organization-view' drive.orgID.id %}"><span>{{ drive.orgID }}</span>
+                        </a>
+                    </div>
+                    <div class="row mb-1">
+                          {% if drive.is_expired %}
+                              <small>Expired on - {{ drive.end_date|date:"F d, Y" }}</small>
+                          {% else %}
+                              <small>{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>
+                          {% endif %}
+                    </div>
+                    <div class="row progress my-2">
+                        {% if drive.progress < 15 %}
+                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 15%"
+                           aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">Donate!</div>
+                        {% else %}
+                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{ drive.progress }}%"
+                           aria-valuenow="{{ drive.progress }}" aria-valuemin="0" aria-valuemax="100">{{ drive.progress }}%</div>
                         {% endif %}
                     </div>
-                    <div class="td">
-                        <a class="donate" href="{% url 'drive-donate' pk=object.id fnum=1 %}">Donate</a>
-                    </div>
-                </div>
-            </div>
-            <div id="black-grd"></div>
-        </div>
-        <div id="main-content">
-            <div class="tb">
-                <div class="td" id="l-col">
-                    <div class="l-cnt">
-                        <div class="cnt-label">
-                            <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i>
-                            <a class="mr-2"
-                               href="{% url 'donos-organization-view' drive.orgID.id %}"><span>{{ drive.orgID }}</span></a>
-                        </div>
-                        <div id="i-box">
-                            <div id="intro-line">
-                              {% if drive.is_expired %}
-                                  <small>Expired on - {{ drive.end_date|date:"F d, Y" }}</small>
-                              {% else %}
-                                  <small>{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</small>
-                              {% endif %}
-                            </div>
-                            <div id="u-occ">Drop Off
-                                Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}</div>
-                            {% for category in object.category.all %}
-                                <span class="badge badge-primary">{{ category.name }}</span>
-                            {% endfor %}
-                            <div id="u-occ">Total Donations: {{ total_dono }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="td" id="m-col">
-                    <div class="m-mrg" id="p-tabs">
-                        <div class="tb">
-                            <div class="td">
-                                <div class="tb" id="p-tabs-m">
-                                    {% if object.author == user %}
-                                        <div class="td">
-                                            <a href="{% url 'drive-update' object.id %}">
-                                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                <span>Update Drive</span>
-                                            </a>
-                                        </div>
-                                        <div class="td">
-                                            <a href="{% url 'drive-notification-post' object.id %}">
-                                                <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                                <span>Create Post</span>
-                                            </a>
-                                        </div>
-                                        <div class="td">
-                                            <a href="{% url 'drive-donations' object.id %}">
-                                                <i class="fa fa-gift" aria-hidden="true"></i>
-                                                <span>Donations</span>
-                                            </a>
-                                        </div>
-                                        <div class="td">
-                                            <a href="{% url 'drive-delete' object.id %}">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                                <span>Delete Drive</span>
-                                            </a>
-                                        </div>
-                                        <div class="td">
-                                            <a href="{% url 'drive-stats' object.id %}">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                                <span>Stats</span>
-                                            </a>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="m-mrg" id="composer">
-                        <div id="c-c-main">
-                            <div class="tb">
-                                <div class="td" id="c-inp">
-                                    <p class="article-content">{{ drive.content }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                    {% for notification in notifications %}
-                        <div class="post">
-                            <div class="tb">
-                                <a href="#" class="td p-p-pic"><img src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"></a>
-                                <div class="td p-r-hdr">
-                                    <div class="p-u-info">
-                                        <h2>{{ notification.title }}</h2>
-                                    </div>
-                                    <div class="p-dt">
-                                        <span>{{ notification.date_posted|date:"F d, Y" }}</span>
-                                    </div>
-                                    <div class="media-body">
-                                        <p class="article-content">{{ notification.description }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row py-2">
+                        {% for category in drive.category.all %}
+                            <span class="badge badge-primary mx-1">{{ category.name }}</span>
                         {% endfor %}
+                    </div>
+                    <div class="row">
+                        <small>
+                            Drop Off Location: {{ drive.address }}, {{ drive.city }}, {{ drive.state }} {{ drive.zipcode }}
+                        </small>
+                    </div>
+                    <div class="row">
+                        <small>
+                            Total Donations: {{ total_dono }}
+                        </small>
+                    </div>
+                    <div class="row">
+                        <small>
+                            Total Donations: {{ drive.followed_by.count }}
+                        </small>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="drive-toolbar row border p-1 justify-content-around">
+                        {% if object.author == user %}
+                            <div class="col-md-2">
+                                <a href="{% url 'drive-update' object.id %}">
+                                    <div class="row ">
+                                        <i class="fa fa-plus-circle fa-2x py-1 mx-auto" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="row">
+                                        <span class="mx-auto">Update</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'drive-notification-post' object.id %}">
+                                    <div class="row ">
+                                        <i class="fa fa-bullhorn fa-2x py-1 mx-auto" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="row">
+                                        <span class="mx-auto">Post</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'drive-donations' object.id %}">
+                                    <div class="row ">
+                                        <i class="fa fa-gift fa-2x py-1 mx-auto" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="row">
+                                        <span class="mx-auto">Donations</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'drive-stats' object.id %}">
+                                    <div class="row ">
+                                        <i class="fa fa-gift fa-2x py-1 mx-auto" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="row">
+                                        <span class="mx-auto">Stats</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'drive-delete' object.id %}">
+                                    <div class="row ">
+                                        <i class="fa fa-trash fa-2x py-1 mx-auto" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="row">
+                                        <span class="mx-auto">Delete</span>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="drive-content-container row mw-100">
+
+                        <div class="row drive-content border p-3 mt-5 mb-2 w-100">
+                            <div class="w-100">
+                                <h2>Drive Description: </h2>
+                            </div>
+                            <div class=" w-100">
+                                {{ drive.content }}
+                            </div>
                         </div>
+                        <div class="row drive-notifications-container mt-5">
+                            {% for notification in notifications %}
+    {#                                <div class="post">#}
+    {#                                    <div class="tb">#}
+    {#                                        <a href="#" class="td p-p-pic">#}
+    {#                                            <img src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg">#}
+    {#                                        </a>#}
+    {#                                        <div class="td p-r-hdr">#}
+    {#                                            <div class="p-u-info">#}
+    {#                                                <h2>{{ notification.title }}</h2>#}
+    {#                                            </div>#}
+    {#                                            <div class="p-dt">#}
+    {#                                                <span>{{ notification.date_posted|date:"F d, Y" }}</span>#}
+    {#                                            </div>#}
+    {#                                            <div class="media-body">#}
+    {#                                                <p class="article-content">{{ notification.description }}</p>#}
+    {#                                            </div>#}
+    {#                                        </div>#}
+    {#                                </div>#}
+                                <div class="row drive-notifications my-3">
+                                    <div class="col-md-4">
+                                        <div style="max-width: 250px;">
+                                            <img src="{{ drive.orgID.logo.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="row pt-3 drive-title text-primary">
+                                            <h2>
+                                                <a class="article-title" href="{% url 'drive-notification-view' notification.drive.id notification.id %}">{{ notification.title }}</a>
+                                            </h2>
+                                        </div>
+                                        <div class="row py-1">
+                                            <small>
+                                                {{ notification.date_posted|date:"F d, Y" }}
+                                            </small>
+                                        </div>
+                                        <div class="row">
+                                            {{ notification.description}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
                     </div>
                 </div>
             </div>
-          <!-- 
-            <!-- Pagination buttons -->
-            {% if notifications.has_previous %}
-                <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
-                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.previous_page_number }}">Previous</a>
-            {% endif %}
+            <div class="row justify-content-start">
+                <div class="col-md-8">
 
-            {% for num in notifications.paginator.page_range %}
-                {% if notifications.number == num %}
-                    <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
-                {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'-3' %}
-                    <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
-
-            {% if notifications.has_next %}
-                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>
-                <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_pages }}">Last</a>
-            {% endif %}
-          -->
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 {% endblock %}
 

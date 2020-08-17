@@ -88,3 +88,60 @@ a.article-title:hover {
     background-color: #f8d7da;
     border-color: #f5c6cb;
 }
+
+.donate {
+  background: #00684d;
+  background: -webkit-linear-gradient(top, transparent 0%, rgba(0, 0, 0, 0.4) 100%), -webkit-linear-gradient(left, #00b486 0%, #00684d 50%, #00b486 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(to right, #00b486 0%, #00684d 50%, #00b486 100%);
+  background-position: 0 0;
+  background-size: 200% 100%;
+  border-radius: 4px;
+  width: 85px;
+  height: 30px;
+  color: #fff;
+  padding: 7px 15px 7px 15px;
+  text-shadow: 1px 1px 5px #666;
+  -webkit-transition: all 800ms;
+  transition: all 800ms;
+}
+.donate:after {
+  border-left: 1px solid #004f3a;
+  color: #003527;
+  padding: 0px 0;
+  padding-left: 3px;
+  position: absolute;
+  -webkit-transition: all 600ms 200ms;
+  transition: all 600ms 200ms;
+}
+.donate:hover {
+  background-position: -100% 0;
+}
+.donate:hover:after {
+  border-left: 1px solid #008260;
+  color: #fff;
+  text-shadow: 0 0 10px #000;
+}
+
+#follow-button {
+  color: #3399FF;
+  font-family: "Helvetica";
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: #3399FF;
+  border-radius: 3px;
+  width: 85px;
+  height: 30px;
+  cursor: hand;
+}
+
+.drive-toolbar, .drive-content, .drive-notifications{
+  background-color: white;
+}
+
+.drive-content {
+  font-size: 1.2rem;
+}
+
+.drive-notifications-container, .drive-notifications {
+	width: 100%;
+}

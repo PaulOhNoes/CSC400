@@ -5,60 +5,175 @@
     <link rel="stylesheet" type="text/css" href="{% static 'donos/drives.css' %}">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.0.2/css/font-awesome.min.css">
 
-    <h1>{{ user.profile.state }}</h1>
-
+{#    <h1>{{ user.profile.state }}</h1>#}
+{##}
     {# display city and state filter buttons if user is logged in#}
-    {% if user.is_authenticated %}
-        <div>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-state' user.username %}" >State</a>
-        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-follow' user.username %}" >Follow</a>
-        {% if user.organization %}
-            <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-yours' user.username %}" >Yours</a>
-        {% endif %}
+{#    {% if user.is_authenticated %}#}
+{#        <div>#}
+{#        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>#}
+{#        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-state' user.username %}" >State</a>#}
+{#        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-follow' user.username %}" >Follow</a>#}
+{#        {% if user.organization %}#}
+{#            <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'donos-home-yours' user.username %}" >Yours</a>#}
+{#        {% endif %}#}
+{#        </div>#}
+{#    {% endif %}#}
+{#    {% for drive in drives %}#}
+{#         <div class="blog-card">#}
+{#    <div class="meta">#}
+{#      <div class="photo" style="background-image: url(https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731)"></div>#}
+{#      <ul class="details">#}
+{#        <li class="author">{{ drive.author }}</li>#}
+{#        {% if drive.is_expired %}#}
+{#          <li class="date">EXPIRED on {{ drive.end_date|date:"F d, Y" }}</li>#}
+{#        {% else %}#}
+{#          <li class="date">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</li>#}
+{#        {% endif %}#}
+{#      </ul>#}
+{#    </div>#}
+{#    <div class="description">#}
+{#      <h1><a href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h1>#}
+{#        <h2><a href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a></h2>#}
+{#      <p>{{ drive.content }}</p>#}
+{#      <p class="read-more">#}
+{#        <a href="{% url 'drive-detail' drive.id %}">Read More</a>#}
+{#      </p>#}
+{#    </div>#}
+{#  </div>#}
+{#    {% endfor %}#}
+{#    {% if is_paginated %}#}
+{#        {% if page_obj.has_previous %}#}
+{#            <a class='btn btn-outline-info mb-4'href="?page=1">First</a>#}
+{#            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.previous_page_number }}">Previous</a>#}
+{#        {% endif %}#}
+{##}
+{#        {% for num in page_obj.paginator.page_range %}#}
+{#            {% if page_obj.number == num %}#}
+{#                <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>#}
+{#            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'-3' %}#}
+{#                <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{##}
+{#        {% if page_obj.has_next %}#}
+{#            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.next_page_number }}">Next</a>#}
+{#            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_pages }}">Last</a>#}
+{#        {% endif %}#}
+{##}
+{#    {% endif %}#}
+
+    <!-- Title Container-->
+    <div class="row">
+        <h1>
+            {{ user.profile.state }}
+        </h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="row justify-content-md-between">
+
+        <!-- drives -->
+        <div class="col-md-7">
+            {% for drive in drives %}
+                        <!-- Drive Logo Container-->
+                        <div class="blog-card row border">
+                            <div class="col-md-5 align-self-center">
+                                <div style="max-width: 250px;">
+                                    <img src="{{ drive.orgID.logo.url }}" alt="">
+                                </div>
+
+{#                                <ul class="details">#}
+{#                                    <li class="author">{{ drive.author }}</li>#}
+{#                                    <li class="date">{{ drive.start_date|date:"F d, Y" }}</li>#}
+{#                                </ul>#}
+                            </div>
+
+                            <!-- Drive Info Container -->
+                            <div class="col-md-7">
+                                    <div class="row pt-2 drive-title justify-content-between no-gutters">
+                                        <div class="col-md-9 text-primary drive-header">
+                                            <a href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a>
+                                        </div>
+                                        <div class="col-md-auto">
+                                            <span > ❤ {{ drive.followed_by.count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-between no-gutters">
+                                        <div class="col-md-6">
+                                            <a class="mr-2 text-info" href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a>
+                                        </div>
+                                        <dov class="col-md-6 text-right">
+                                            {% if drive.is_expired %}
+                                                <small class="text-muted"> EXPIRED on {{ drive.end_date|date:"F d, Y" }}</small>
+                                            {% else %}
+                                                <small class="text-muted">{{ drive.end_date|date:"N d, Y" }}</small>
+                                            {% endif %}
+                                        </dov>
+                                    </div>
+                                    <div class="row py-1">
+                                        {% for category in drive.category.all %}
+                                            <span class="badge badge-primary mx-1">{{ category.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="row">
+                                        {{ drive.content|slice:'250'}} ...
+                                    </div>
+
+{#                                <p class="read-more">#}
+{#                                    <a href="{% url 'drive-detail' drive.id %}">Read More</a>#}
+{#                                </p>#}
+                            </div>
+                        </div>
+                    {% endfor %}
         </div>
-    {% endif %}
-    {% for drive in drives %}
-         <div class="blog-card">
-    <div class="meta">
-      <div class="photo" style="background-image: url(https://vignette.wikia.nocookie.net/villains/images/d/df/OfficialAkatsuki.jpeg/revision/latest?cb=20190207004731)"></div>
-      <ul class="details">
-        <li class="author">{{ drive.author }}</li>
-        {% if drive.is_expired %}
-          <li class="date">EXPIRED on {{ drive.end_date|date:"F d, Y" }}</li>
-        {% else %}
-          <li class="date">{{ drive.start_date|date:"F d, Y" }} - {{ drive.end_date|date:"F d, Y" }}</li>
-        {% endif %}
-      </ul>
-    </div>
-    <div class="description">
-      <h1><a href="{% url 'drive-detail' drive.id %}">{{ drive.title }}</a></h1>
-        <h2><a href="{% url 'donos-organization-view' drive.orgID.id %}">{{ drive.orgID }}</a></h2>
-      <p>{{ drive.content }}</p>
-      <p class="read-more">
-        <a href="{% url 'drive-detail' drive.id %}">Read More</a>
-      </p>
-    </div>
-  </div>
-    {% endfor %}
-    {% if is_paginated %}
-        {% if page_obj.has_previous %}
-            <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
-            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.previous_page_number }}">Previous</a>
-        {% endif %}
 
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-                <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'-3' %}
-                <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
+        <!-- filters -->
+        <div class="col-md-4">
+            <div class="row justify-content-start">
+                <h1>Filters</h1>
+            </div>
+            <div class="row justify-content-start">
+                {% if user.is_authenticated %}
+                      <div class="col-md-3">
+                        <a class="btn btn-info btn-md mt-1 mb-1" href="{% url 'donos-home-city' user.username %}">City</a>
+                      </div>
+                      <div class="col-md-3">
+                        <a class="btn btn-info btn-md mt-1 mb-1" href="{% url 'donos-home-state' user.username %}" >State</a>
+                      </div>
+                      <div class="w-100 d-none d-md-block"></div>
+                      <div class="col-md-3">
+                        <a class="btn btn-info btn-md mt-1 mb-1" href="{% url 'donos-home-follow' user.username %}" >Follow</a>
+                      </div>
+                      <div class="col-md-3">
+                        {% if user.organization %}
+                            <a class="btn btn-info btn-md mt-1 mb-1" href="{% url 'donos-home-yours' user.username %}" >Yours</a>
+                        {% endif %}
+                      </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination Container -->
+    <div class="row">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
+                <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.previous_page_number }}">Previous</a>
             {% endif %}
-        {% endfor %}
 
-        {% if page_obj.has_next %}
-            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.next_page_number }}">Next</a>
-            <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'-3' %}
+                    <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a class='btn btn-outline-info mb-4'href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
         {% endif %}
-
-    {% endif %}
+    </div>
 {% endblock %}

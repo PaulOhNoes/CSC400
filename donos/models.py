@@ -89,12 +89,13 @@ class Drive(models.Model):
     def save(self, *args, **kwargs):
         super(Drive, self).save(*args, **kwargs)
 
-        img = Image.open(self.banner.path)
+        banner = Image.open(self.banner.path)
 
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.banner.path)
+        if banner.height > 350 or banner.width > 1110:
+            new_banner = banner.resize((1110, 350), Image.ANTIALIAS)
+            new_banner.save(self.banner.path)
+
+
 
     # Check to see if the drive is expired
     @property

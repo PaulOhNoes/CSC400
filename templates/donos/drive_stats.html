@@ -1,39 +1,48 @@
 {% extends "donos/base.html" %}
 {% block content %}
-    <h1>{{ drive.title}} Stats</h1>
-    <div>
-        <h4>
-        {% if time_left is not 0%}
-            Time Left: {{ time_left.days}} days left
-        {% else %}
-            Time Left: EXPIRED
-        {% endif %}
-        </h4>
-        <h4>Followers: {{ followers }}</h4>
+    <div class="row">
+        <h1 class="display-1">{{ drive.title}} Stats</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>
+                {% if time_left is not 0%}
+                    Time Left: {{ time_left.days}} days left
+                {% else %}
+                    Time Left: EXPIRED
+                {% endif %}
+            </h2>
+        </div>
+        <div class="col-md-6">
+            <h2>Followers: {{ followers }}</h2>
+        </div>
     </div>
 
-     <!-- display category stats-->
-    <div>
-        <h4>Donation Categories</h4>
-        {% for key,value in dict.items %}
-            <p>{{ key }} - {{ value }}</p>
-        {% endfor %}
-    </div>
-    <div>
-        <h4>Donations Count</h4>
-        <p>Total Donations: {{ total_dono }}</p>
-        <p>Total Approved: {{ total_approved }}</p>
-        <p>Total Not Approved: {{ total_unapproved }}</p>
-    </div>
-    <div>
-        <h4>Top 3 Donors</h4>
-        {% if top_donors %}
-            {% for donor in top_donors %}
-                <p>Donor: {{ donor.username }}</p>
+    <div class="row justify-content-around my-5">
+        <div class="col-md-4 border p-3">
+            <h2 class="">Donation Categories</h2>
+            {% for key,value in dict.items %}
+                <div>
+                    {{ key }} - {{ value }}
+                </div>
             {% endfor %}
-        {% else %}
-            <p>You have no donors</p>
-        {% endif %}
+        </div>
+        <div class="col-md-4 border p-3">
+            <h2 class="">Donations Count</h2>
+            <div>Total Donations: {{ total_dono }}</div>
+            <div>Total Approved: {{ total_approved }}</div>
+            <div>Total Not Approved: {{ total_unapproved }}</div>
+        </div>
+        <div class="col-md-4 border p-3">
+            <h2 class="">Top 3 Donors</h2>
+            {% if top_donors %}
+                {% for donor in top_donors %}
+                    <div>Donor: {{ donor.username }}</div>
+                {% endfor %}
+            {% else %}
+                <div>You have no donors</div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
 
