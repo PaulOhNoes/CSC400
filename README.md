@@ -32,4 +32,4 @@ Marquis Lockhart & Paul Osorio
 There is no license for this project.
 
 ## Acknowledgments
-Special thanks to [Dr. Imad Antonios](https://www.linkedin.com/in/imadantonios) for running the course & [Corey Schafer](https://www.youtube.com/watch?v=UmljXZIypDc&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p) for the Django tutorials used in this project.
+Special thanks to [Dr. Imad Antonios](https://www.linkedin.com/in/imadantonios) for running the course & [Corey Schafer](https://www.youtube.com/watch?v=UmljXZIypDc&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p) for the Django tutorials.
