@@ -156,7 +156,7 @@ class DriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class DriveDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Drive
-    success_url = '/donos/'
+    success_url = '/'
 
     def test_func(self):
         drive = self.get_object()
@@ -194,22 +194,29 @@ def donate(request, pk, fnum):
     # WITHOUT form_kwargs CUSTOM PARAMETERS IN FORMS WOULD NOT WORK
     formset = formset_base(form_kwargs={'id': pk})
     helper = DonationFormSetHelper()
+
+    # Validate Donation Form
     if 'submit' in request.POST:
         formset = formset_base(request.POST, form_kwargs={'id': pk})
         if formset.is_valid():
+            # creates donation object
             d = Donation.objects.create(drive=Drive.objects.get(id=pk), user=request.user, approved=False)
             d.save()
+            # retrieves donation object from database
             d.refresh_from_db()
             for form in formset:
+                # Assigns each DonationItem object to Current Donation
                 obj = form.save(commit=False)
                 obj.donation = d
                 obj.save()
             return redirect('drive-detail', pk)
         else:
             messages.error(request, "Not valid!")
+    # Increments DonationItem form
     elif 'form_add' in request.POST:
         fnum = fnum + 1
         return redirect('drive-donate', pk, fnum)
+    # Decrements Donation Item form
     elif 'form_remove' in request.POST:
         fnum = fnum - 1
         return redirect('drive-donate', pk, fnum)
@@ -394,15 +401,25 @@ def locations_map(request):
     link = 'https://www.google.com/maps/embed/v1/search?key={}&q={}'
     api_key = os.getenv('api_key')
 
+    # Optimal search string
+    text_query = 'charity OR food bank in {}'
+
     if request.method == 'POST':
         form = SearchForm(request.POST)
         if form.is_valid():
+            # retrieves data from form field
             data = form.cleaned_data['search']
-            text_query = 'charity OR food bank in {}'.format(data)
-            text_query = text_query.replace(" ", "+")
-            link = link.format(api_key, text_query)
+            query = text_query.format(data)
+            # replaces spaces with + for api compatibility
+            query = query.replace(" ", "+")
+
+            link = link.format(api_key, query)
     else:
-        link = 'https://www.google.com/maps/embed/v1/search?key={}&q=charity+OR+food+bank+in+{}'.format(api_key, request.user.profile.zipcode)
+        # default location is user's zipcode
+        query = text_query.format(request.user.profile.zipcode)
+        query = query.replace(" ", "+")
+
+        link = link.format(api_key, query)
         form = SearchForm()
 
     context = {

@@ -34,13 +34,11 @@ class Organization(models.Model):
         logo = Image.open(self.logo.path)
         header = Image.open(self.header.path)
 
-        if logo.height > 300 or logo.width > 300:
-            output_size = (300, 300)
-            logo.thumbnail(output_size)
-            logo.save(self.logo.path)
-        if header.height > 350 or header.width > 1110:
-            new_header = header.resize((1110, 350), Image.ANTIALIAS)
-            new_header.save(self.header.path)
+        new_logo = logo.resize((300, 300), Image.ANTIALIAS)
+        new_logo.save(self.logo.path)
+
+        new_header = header.resize((1110, 350), Image.ANTIALIAS)
+        new_header.save(self.header.path)
 
 
 class Category(models.Model):
@@ -91,9 +89,8 @@ class Drive(models.Model):
 
         banner = Image.open(self.banner.path)
 
-        if banner.height > 350 or banner.width > 1110:
-            new_banner = banner.resize((1110, 350), Image.ANTIALIAS)
-            new_banner.save(self.banner.path)
+        new_banner = banner.resize((1110, 350), Image.ANTIALIAS)
+        new_banner.save(self.banner.path)
 
 
 
@@ -133,3 +130,7 @@ class Notifications(models.Model):
     description = models.TextField(max_length=500)
     date_posted = models.DateTimeField(default=timezone.now)
     drive = models.ForeignKey(Drive, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Notifications"
+        verbose_name_plural = "Notifications"

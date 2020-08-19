@@ -216,12 +216,15 @@
                     </div>
                     <div class="row">
                         <small>
-                            Total Donations: {{ drive.followed_by.count }}
+                            Followers : {{ drive.followed_by.count }}
                         </small>
                     </div>
                 </div>
                 <div class="col-md-7">
-                    <div class="drive-toolbar row border p-1 justify-content-around">
+                    <div class="drive-toolbar row p-1 justify-content-around
+                        {% if object.author == user %}
+                            border
+                        {% endif %} ">
                         {% if object.author == user %}
                             <div class="col-md-2">
                                 <a href="{% url 'drive-update' object.id %}">
@@ -287,23 +290,6 @@
                         </div>
                         <div class="row drive-notifications-container mt-5">
                             {% for notification in notifications %}
-    {#                                <div class="post">#}
-    {#                                    <div class="tb">#}
-    {#                                        <a href="#" class="td p-p-pic">#}
-    {#                                            <img src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg">#}
-    {#                                        </a>#}
-    {#                                        <div class="td p-r-hdr">#}
-    {#                                            <div class="p-u-info">#}
-    {#                                                <h2>{{ notification.title }}</h2>#}
-    {#                                            </div>#}
-    {#                                            <div class="p-dt">#}
-    {#                                                <span>{{ notification.date_posted|date:"F d, Y" }}</span>#}
-    {#                                            </div>#}
-    {#                                            <div class="media-body">#}
-    {#                                                <p class="article-content">{{ notification.description }}</p>#}
-    {#                                            </div>#}
-    {#                                        </div>#}
-    {#                                </div>#}
                                 <div class="row drive-notifications my-3">
                                     <div class="col-md-4">
                                         <div style="max-width: 250px;">
@@ -332,11 +318,28 @@
                     </div>
                     </div>
                 </div>
-            </div>
-            <div class="row justify-content-start">
-                <div class="col-md-8">
+            <div class="row justify-content-end">
+                <div class="col-md-7">
+                    <!-- Pagination buttons -->
+                    {% if notifications.has_previous %}
+                        <a class='btn btn-outline-info mb-4'href="?page=1">First</a>
+                        <a class='btn btn-outline-info mb-4'href="?page={{ notifications.previous_page_number }}">Previous</a>
+                    {% endif %}
 
+                    {% for num in notifications.paginator.page_range %}
+                        {% if notifications.number == num %}
+                            <a class='btn btn-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                        {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'-3' %}
+                            <a class='btn btn-outline-info mb-4'href="?page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if notifications.has_next %}
+                        <a class='btn btn-outline-info mb-4'href="?page={{ notifications.next_page_number }}">Next</a>
+                        <a class='btn btn-outline-info mb-4'href="?page={{ notifications.paginator.num_pages }}">Last</a>
+                    {% endif %}
                 </div>
+            </div>
             </div>
         </div>
     </div>
